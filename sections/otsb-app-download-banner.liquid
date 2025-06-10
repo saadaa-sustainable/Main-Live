@@ -1,0 +1,739 @@
+{% comment %}
+  App Download Banner Section
+  Allows store owner to promote their mobile app with download links
+{% endcomment %}
+{%- liquid
+  assign screen_md = 768
+  assign shopify_screen_md = 750  
+  assign lazy_loading = 'eager'
+  assign fetch_priority = 'high'
+  if section.settings.lazy_load == true
+    assign lazy_loading = 'lazy'
+    assign fetch_priority = 'auto'
+  endif
+
+-%}
+
+{% comment %}template app-embed-warning.liquid{% endcomment %}
+{% if request.design_mode %}
+  <style>
+    .otsb_nope {
+      display: none !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      opacity: 0 !important;
+    }
+    ._otsb_warning {
+      position: relative;
+      box-shadow: 0rem 0.1875rem 0.0625rem -0.0625rem rgba(26, 26, 26, 0.07);
+      border-radius: 1rem;
+    }
+    ._otsb_warning::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      box-shadow: 0.0625rem 0rem 0rem 0rem rgba(0, 0, 0, 0.13) inset,
+      -0.0625rem 0rem 0rem 0rem rgba(0, 0, 0, 0.13) inset, 0rem -0.0625rem 0rem 0rem rgba(0, 0, 0, 0.17) inset,
+      0rem 0.0625rem 0rem 0rem rgba(204, 204, 204, 0.5) inset;
+      border-radius: 1rem;
+      pointer-events: none;
+      mix-blend-mode: luminosity;
+    }
+  </style>
+  <div x-data="otsb_script_require" class="page-width" style="margin-top:36px;margin-bottom:36px">
+    <div class="_otsb_warning">
+      <div style="border-top-left-radius:1rem;border-top-right-radius:1rem;border:1px solid #fcaf0a;background:#fcb827;padding:1rem">
+        <div style="align-items:center;gap:8px;display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:space-between">
+          <div style="display:flex;gap:4px;flex-direction:row;flex-wrap:nowrap;justify-content:space-between">
+            <span style="display:block;height:20px;width:20px;max-height:100%;max-width:100%;margin:auto">
+              <svg viewBox="0 0 20 20" class="Polaris-Icon__Svg" focusable="false" aria-hidden="true">
+                <path d="M10 6.75a.75.75 0 0 1 .75.75v3.5a.75.75 0 1 1-1.5 0v-3.5a.75.75 0 0 1 .75-.75Z"></path><path d="M11 13.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path><path fill-rule="evenodd" d="M10 3.5c-1.045 0-1.784.702-2.152 1.447a449.26 449.26 0 0 1-2.005 3.847l-.028.052a403.426 403.426 0 0 0-2.008 3.856c-.372.752-.478 1.75.093 2.614.57.863 1.542 1.184 2.464 1.184h7.272c.922 0 1.895-.32 2.464-1.184.57-.864.465-1.862.093-2.614-.21-.424-1.113-2.147-2.004-3.847l-.032-.061a429.497 429.497 0 0 1-2.005-3.847c-.368-.745-1.107-1.447-2.152-1.447Zm-.808 2.112c.404-.816 1.212-.816 1.616 0 .202.409 1.112 2.145 2.022 3.88a418.904 418.904 0 0 1 2.018 3.875c.404.817 0 1.633-1.212 1.633h-7.272c-1.212 0-1.617-.816-1.212-1.633.202-.408 1.113-2.147 2.023-3.883a421.932 421.932 0 0 0 2.017-3.872Z"></path>
+              </svg>
+            </span>
+            <h2 style="overflow-wrap:anywhere;word-break:normal;font-size:100%;font-weight:650;line-height:1.25;color:rgb(37,26,0)">
+              App Embeds Are Disabled
+            </h2>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1rem;color:rgb(37,26,0)">
+        <p>
+          To use this section, the app embeds of OT: Theme Sections must be enabled in the theme editor. Please follow
+          these steps to activate them:
+        </p>
+        <ul>
+          <li>In the left panel, click the last icon that says <b>“App embeds”</b>.</li>
+          <li>Enter <b>“OT”</b> on the search bar to quickly find and embed the apps from OT: Theme Sections.</li>
+          <li>
+            Turn on the Toggle buttons of "Section Builder Script" and "Section Builder Style", then click <b>Save</b>.
+          </li>
+        </ul>
+        <p>
+          Please refer to the User Guide
+          <a
+            href="https://support.omnithemes.com/blogs/ot-theme-sections-get-started/1-embed-app-to-shopify-theme"
+            target="_blank"
+          >here</a
+          >
+        </p>
+        <p>
+          For further support: feel free to contact us at
+          <a href="mailto:support@omnithemes.com">support@omnithemes.com</a>!
+        </p>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% comment %}endtemplate{% endcomment %}
+{%- style -%}
+#shopify-section-{{ section.id }} .app-download-banner {
+  padding: {{ section.settings.section_padding_mobile }}px;
+  margin-block: {{ section.settings.section_margin }}px;
+  background-color: {{ section.settings.background_color }};
+}
+#shopify-section-{{ section.id }} .__x_mb {
+  margin-bottom:var(--otsb-mb,{{ section.settings.elements_spacing }}px);
+}
+#shopify-section-{{ section.id }} .__x_gap {
+  gap:var(--otsb-gap,{{ section.settings.elements_spacing }}px);
+}
+#shopify-section-{{ section.id }} .app-download-banner__container {
+  display: grid;
+  margin: 0 auto;
+  max-width: {{ section.settings.content_max_w }}px;
+  
+  {% if section.settings.content_position == 'center' %}
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto; /* First row for content, second for image */
+    align-items: center;
+    justify-items: center;
+  {% else %}
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    {% if section.settings.content_position == 'right' %}
+      direction: rtl; /* Reverse the grid order for right positioning */
+    {% endif %}
+  {% endif %}
+}
+
+#shopify-section-{{ section.id }} .app-download-banner__content {
+  {% if section.settings.content_position == 'center' %}
+    text-align: center;
+    grid-row: 1; /* Place content in first row when centered */
+    width: 100%;
+  {% else %}
+    grid-column: 1;
+    {% if section.settings.content_position == 'right' %}
+      direction: ltr; /* Reset direction for the content */
+    {% endif %}
+  {% endif %}
+}
+
+#shopify-section-{{ section.id }} .app-download-banner__image-container {
+  {% if section.settings.content_position == 'center' %}
+    grid-row: 2; /* Place image in second row when centered */
+    width: 100%;
+    max-width: 100%;
+  {% else %}
+    grid-column: 2;
+    {% if section.settings.content_position == 'right' %}
+      direction: ltr; /* Reset direction for the image */
+    {% endif %}
+  {% endif %}
+  
+  {% case section.settings.desktop_image_height %}
+    {% when 'small' %}
+      height: 300px !important;
+    {% when 'medium' %}
+      height: 450px !important;
+    {% when 'large' %}
+      height: 600px !important;
+  {% endcase %}
+}
+
+#shopify-section-{{ section.id }} .app-download-banner__heading {
+  font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+  font-weight: {{ section.settings.heading_font.weight }};
+  font-size: {{ section.settings.heading_size_mobile }}px;
+  color: {{ section.settings.heading_color }};
+  margin-block-start: 1.5rem;
+}
+
+#shopify-section-{{ section.id }} .__x_text_typography {
+  font-family: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};
+  font-weight: {{ section.settings.text_font.weight }};
+  font-size: {{ section.settings.text_size_mobile }}px;
+}
+#shopify-section-{{ section.id }} .app-download-banner__subheading {
+  color: {{ section.settings.subheading_color }};
+}
+#shopify-section-{{ section.id }} .__x_richtext p{margin-block:0}
+
+#shopify-section-{{ section.id }} .__x_richtext {
+  color: {{ section.settings.text_color }};
+}
+#shopify-section-{{ section.id }} .__x_richtext ul,
+#shopify-section-{{ section.id }} .__x_richtext ol {
+  list-style: revert;
+  margin:revert;
+  padding: revert;
+}
+#shopify-section-{{ section.id }} .__x_richtext h1,
+#shopify-section-{{ section.id }} .__x_richtext h2,
+#shopify-section-{{ section.id }} .__x_richtext h3,
+#shopify-section-{{ section.id }} .__x_richtext h4,
+#shopify-section-{{ section.id }} .__x_richtext h5{font-size:calc(var(--font-heading-scale) * var(--otsb-font-heading-size))}
+#shopify-section-{{ section.id }} .__x_richtext h1 {--otsb-font-heading-size:3rem}
+#shopify-section-{{ section.id }} .__x_richtext h2 {--otsb-font-heading-size:2rem}
+#shopify-section-{{ section.id }} .__x_richtext h3 {--otsb-font-heading-size:1.7rem}
+#shopify-section-{{ section.id }} .__x_richtext h4 {--otsb-font-heading-size:1.5rem}
+#shopify-section-{{ section.id }} .__x_richtext h5 {--otsb-font-heading-size:1.2rem}
+#shopify-section-{{ section.id }} .__x_richtext h6 {
+  margin-block-start: 1.67em;
+  margin-block-end: 1.67em;
+  font-size:revert;
+}
+@media (min-width: {{shopify_screen_md}}px) {
+  #shopify-section-{{ section.id }} .__x_richtext h1 {--otsb-font-heading-size:4rem}
+  #shopify-section-{{ section.id }} .__x_richtext h2 {--otsb-font-heading-size:2.4rem}
+  #shopify-section-{{ section.id }} .__x_richtext h3 {--otsb-font-heading-size:1.8rem}
+  #shopify-section-{{ section.id }} .__x_richtext h5 {--otsb-font-heading-size:1.3rem}
+}
+
+#shopify-section-{{ section.id }} .__x_richtext a {
+  color: rgb(var(--color-link));
+}
+#shopify-section-{{ section.id }} .__x_richtext a:hover {
+  text-decoration: underline;
+}
+
+#shopify-section-{{ section.id }} .app-download-banner__badges {
+  {% if section.settings.content_position == 'center' %}justify-content: center;{% endif %}
+  justify-content: {%- if section.settings.mobile_content_position == 'center' %}center;{% elsif section.settings.mobile_content_position == 'right' %}flex-end;{% else %}flex-start;{% endif %}
+  @media screen and (min-width: {{ screen_md }}px) {
+    justify-content: {% if section.settings.content_position == 'center' %}center;{% else %}flex-start;{% endif %}
+  }
+}
+
+#shopify-section-{{ section.id }} .app-download-banner__badge {
+  max-width: 140px;
+  height: auto;
+}
+
+#shopify-section-{{ section.id }} .app-download-banner__qr {
+  {% if section.settings.content_position == 'center' %}
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+  {% else %}
+    margin: 0;
+  {% endif %}
+  width: 256px;
+}
+
+{% comment %} #shopify-section-{{ section.id }} .app-download-banner__mobile-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: {%- if section.settings.mobile_content_position == 'center' %}
+      center center;
+    {% elsif section.settings.mobile_content_position == 'right' %}
+      right center;
+    {% else %}
+      left center;
+    {% endif %}
+} {% endcomment %}
+
+@media screen and (max-width: {{ screen_md | minus: 1 }}px) {
+  #shopify-section-{{ section.id }} .page-width {
+    padding-left:0;padding-right:0;
+  }
+  #shopify-section-{{ section.id }} .mobile-page-width {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+  }
+  #shopify-section-{{ section.id }} .app-download-banner__container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    direction: ltr; /* Reset any RTL direction from desktop */
+  }
+  
+  #shopify-section-{{ section.id }} .app-download-banner__content {
+    width: 100%;
+    {% if section.settings.mobile_content_position == 'center' %}
+      text-align: center;
+    {% elsif section.settings.mobile_content_position == 'right' %}
+      text-align: right;
+    {% else %}
+      text-align: left;
+    {% endif %}
+  }
+  
+  #shopify-section-{{ section.id }} .app-download-banner__image-container {
+    display:none;
+  }
+  #shopify-section-{{ section.id }} .app-download-banner__mobile-image-container {
+    {% case section.settings.mobile_image_height %}
+      {% when 'small' %}
+        height: 200px !important;
+      {% when 'medium' %}
+        height: 300px !important;
+      {% when 'large' %}
+        height: 400px !important;
+    {% endcase %}
+  }
+  
+  .app-download-banner__qr {
+    display: none;
+  }
+}
+
+@media screen and (min-width: {{screen_md}}px) {
+  #shopify-section-{{ section.id }} .__x_text_typography {font-size: {{ section.settings.text_size }}px;}
+  #shopify-section-{{ section.id }} .app-download-banner__heading {
+    font-size: {{ section.settings.heading_size }}px;
+  }
+  #shopify-section-{{ section.id }} .app-download-banner {
+    padding: {{ section.settings.section_padding }}px;
+  }
+}
+{%- endstyle -%}
+
+<div x-data="otsb_script_1" class="otsb_nope {% unless section.settings.mobile_full_width %}mobile-page-width{%-endunless-%} {%unless section.settings.desktop_full_width%} page-width{%-endunless-%}">
+  <div class="app-download-banner ">
+    <div class="app-download-banner__container __x_gap">
+      <div class="app-download-banner__content">
+        {% if section.settings.subheading != blank %}
+          <h3 class="app-download-banner__subheading __x_text_typography __x_mb">{{ section.settings.subheading }}</h3>
+        {% endif %}
+        
+        {% if section.settings.heading != blank %}
+          <h2 class="app-download-banner__heading __x_mb">{{ section.settings.heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.mobile_image != blank or section.settings.desktop_image != blank %}
+        <div class="app-download-banner__mobile-image-container __x_mb md:hidden">
+          <picture>
+            {%-liquid
+              assign mb_image = section.settings.mobile_image
+              if section.settings.mobile_image == blank
+                assign mb_image = section.settings.desktop_image
+              endif
+              assign mobile_img_sizes = '(min-width:' | append: screen_md | append: 'px) 50vw, 100vw'
+            -%}
+            <source
+              media="(max-width: {{screen_md | minus: 1}}px)"
+              srcset="{{ mb_image | image_url: width: 375 }} 375w,
+                      {{ mb_image | image_url: width: 450 }} 450w,
+                      {{ mb_image | image_url: width: 750 }} 750w,
+                      {{ mb_image | image_url: width: 900 }} 900w"
+              sizes="100vw">
+              {{ mb_image | image_url: width: 900 | image_tag: sizes: mobile_img_sizes, loading: lazy_loading, fetchpriority: fetch_priority, class: 'app-download-banner__mobile-image w-full h-full object-cover' }}
+          </picture>
+        </div>
+        {% endif %}
+        {% if section.settings.text != blank %}
+          <div class="app-download-banner__text __x_richtext __x_text_typography __x_mb" style="--otsb-mb:{{ section.settings.elements_spacing | plus: 5 }}px">{{ section.settings.text }}</div>
+        {% endif %}
+        
+        <!-- Remove the additional_info HTML block -->
+        
+        <div class="app-download-banner__badges flex flex-wrap __x_mb __x_gap" style="--otsb-gap:{{ section.settings.elements_spacing | divided_by: 2 }}px">
+          {% if section.settings.apple_badge_image != blank and section.settings.apple_link != blank %}
+            <a href="{{ section.settings.apple_link }}" target="_blank" rel="noopener">
+              <img class="app-download-banner__badge" 
+                  src="{{ section.settings.apple_badge_image | image_url: width: 140 }}" 
+                  srcset="{{ section.settings.apple_badge_image | image_url: width: 140 }} 140w,
+                          {{ section.settings.apple_badge_image | image_url: width: 280 }} 280w"
+                  sizes="140px"
+                  width="{{ section.settings.apple_badge_image.width }}"
+                  height="{{ section.settings.apple_badge_image.height }}"
+                  loading="{{ lazy_loading }}"
+                  fetchpriority="{{ fetch_priority }}"
+                  alt="App Store Download">
+            </a>
+          {% endif %}
+          
+          {% if section.settings.google_badge_image != blank and section.settings.google_link != blank %}
+            <a href="{{ section.settings.google_link }}" target="_blank" rel="noopener">
+              <img class="app-download-banner__badge" 
+                  src="{{ section.settings.google_badge_image | image_url: width: 140 }}" 
+                  srcset="{{ section.settings.google_badge_image | image_url: width: 140 }} 140w,
+                          {{ section.settings.google_badge_image | image_url: width: 280 }} 280w"
+                  sizes="140px"
+                  width="{{ section.settings.google_badge_image.width }}"
+                  height="{{ section.settings.google_badge_image.height }}"
+                  loading="{{ lazy_loading }}"
+                  fetchpriority="{{ fetch_priority }}"
+                  alt="Google Play Download">
+            </a>
+          {% endif %}
+        </div>
+        
+        {% if section.settings.badges_text != blank %}
+          <div class="app-download-banner__badges-text __x_richtext __x_text_typography __x_mb" style="--otsb-mb:{{ section.settings.elements_spacing }}px">{{ section.settings.badges_text }}</div>
+        {% endif %}
+        
+        {% if section.settings.qr_code_image != blank %}
+          <div class="app-download-banner__qr __x_mb">
+            <img src="{{ section.settings.qr_code_image | image_url: width: 120 }}" 
+                srcset="{{ section.settings.qr_code_image | image_url: width: 120 }} 120w,
+                        {{ section.settings.qr_code_image | image_url: width: 240 }} 240w"
+                sizes="256px"
+                width="{{ section.settings.qr_code_image.width }}"
+                height="{{ section.settings.qr_code_image.height }}"
+                loading="{{ lazy_loading }}"
+                fetchpriority="{{ fetch_priority }}"
+                alt="Scan QR Code"
+                class="max-w-full h-auto"
+              >
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="app-download-banner__image-container md:flex justify-center items-center overflow-hidden">
+        {% if section.settings.desktop_image != blank %}
+          <picture class="flex justify-center items-center w-full h-full">
+            {% if section.settings.desktop_image != blank %}
+            <source
+              media="(min-width: {{screen_md}}px)"
+              srcset="{{ section.settings.desktop_image | image_url: width: 750 }} 750w,
+                      {{ section.settings.desktop_image | image_url: width: 1100 }} 1100w,
+                      {{ section.settings.desktop_image | image_url: width: 1500 }} 1500w,
+                      {{ section.settings.desktop_image | image_url: width: 2000 }} 2000w,
+                      {{ section.settings.desktop_image | image_url: width: 3000 }} 3000w"
+              sizes="(min-width: {{screen_md}}px) 50vw, 100vw">
+              {% comment %} Fake fallback image to prevent render desktop image when in mobile {% endcomment %}
+              <img src="" alt="" loading="{{ lazy_loading }}" fetchpriority="{{ fetch_priority }}" class="max-w-full max-h-full object-contain" />
+            {% endif %}
+          </picture>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "OT: App Download Banner",
+  "class": "otsb__root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "desktop_image_height",
+      "label": "Desktop Image Height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small (300px)"
+        },
+        {
+          "value": "medium",
+          "label": "Medium (450px)"
+        },
+        {
+          "value": "large",
+          "label": "Large (600px)"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_height",
+      "label": "Mobile Image Height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small (200px)"
+        },
+        {
+          "value": "medium",
+          "label": "Medium (300px)"
+        },
+        {
+          "value": "large",
+          "label": "Large (400px)"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "range",
+      "id": "content_max_w",
+      "default": 1200,
+      "label": "Content Max Width",
+      "min": 800,
+      "max": 2000,
+      "step": 50
+    },
+    {
+      "type": "checkbox",
+      "id": "desktop_full_width",
+      "label": "Full Width (Desktop)",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_full_width",
+      "label": "Full Width (Mobile)",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content Position (Desktop)",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_position",
+      "label": "Content Alignment (Mobile)",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "elements_spacing",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Elements Spacing",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Section Padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_padding_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Section Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "section_margin",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Section Margin",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Shop anytime, anywhere"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#4a4a4a"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Download Our App"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Get exclusive deals and manage your orders on the go with our mobile app.</p>"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#4a4a4a"
+    },
+    {
+      "type": "richtext",
+      "id": "badges_text",
+      "label": "Text Below Badges",
+      "default": "<p>Scan the QR code or click on the badges to download our app</p>"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size (Mobile)",
+      "default": 24
+    },
+    {
+      "type": "font_picker",
+      "id": "text_font",
+      "label": "Text Font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Text Font Size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Text Font Size (Mobile)",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy Load Images",
+      "default": true,
+      "info": "Disable this option if the section display at the top of the page."
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile Image"
+    },
+    {
+      "type": "header",
+      "content": "Download Options"
+    },
+    {
+      "type": "image_picker",
+      "id": "apple_badge_image",
+      "label": "App Store Badge"
+    },
+    {
+      "type": "url",
+      "id": "apple_link",
+      "label": "App Store Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "google_badge_image",
+      "label": "Google Play Badge"
+    },
+    {
+      "type": "url",
+      "id": "google_link",
+      "label": "Google Play Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "qr_code_image",
+      "label": "QR Code Image",
+      "info": "Desktop only"
+    }
+  ],
+  "presets": [
+    {
+      "name": "OT: App Download Banner",
+      "category": "Promotional"
+    }
+  ]
+}
+{% endschema %}

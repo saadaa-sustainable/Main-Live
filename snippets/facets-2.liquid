@@ -1,0 +1,138 @@
+{%- comment -%}
+  FACETING
+  ----------------------------------------------------------------------------------------------------------------------
+  Display the facets for a given resource.
+{%- endcomment -%}
+<style>
+  .c_nav_filter {
+    margin-bottom: 2rem;
+  }
+  .c_nav_filter .checkbox-control label {
+    border: 1px solid;
+    padding: 5px 10px;
+    border-radius: 2px;
+    font-size: 12px;
+  }
+  .c_nav_filter .checkbox-control {
+    min-width: fit-content;
+  }
+  .c_nav_filter .checkbox~label {
+    opacity: 1;
+    transition: opacity .2s, transform .2s;
+    position: relative;
+  }
+  .c_nav_filter .checkbox:checked~label {
+    opacity: 1;
+    transform: translate(0);
+    background: #000;
+    color: white;
+  }
+  .c_nav_filter .checkbox:checked {
+    opacity: 0;
+  }
+  .c_nav_filter .checkbox {
+    /* Completely hide the native checkbox, but keep it in the accessibility tree */
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  /* Responsive scroll wrapper for filters (carousel) */
+  .facets-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 2rem;
+  }
+  .facets-scroll-inner {
+    display: flex;
+    gap: 1rem;
+    /* prevents wrapping on mobile, so it's horizontal only */
+    flex-wrap: nowrap;
+  }
+  /* Hide scrollbar for Webkit browsers (iOS/Android Chrome/Safari) */
+  .facets-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for Firefox */
+  .facets-scroll-wrapper {
+    scrollbar-width: none;
+  }
+  /* Desktop: wrap items, show all filters, no scroll */
+  @media (min-width: 768px) {
+    .facets-scroll-wrapper {
+      overflow-x: visible;
+      scrollbar-width: auto;
+    }
+    .facets-scroll-inner {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .facets-scroll-wrapper::-webkit-scrollbar {
+      display: block;
+    }
+  }
+</style>
+{%- assign color_label_list = 'general.label.color' | t | replace: ', ', ',' | downcase | split: ',' -%}
+{%- capture id_prefix -%}facets-{{ context }}{%- endcapture -%}
+
+<form
+  is="facets-form"
+  {% if update_on_change %}
+    update-on-change
+  {% endif %}
+  section-id="{{ section.id }}"
+  method="GET"
+  action="{{ request.path }}"
+  class="facets"
+>
+  <input type="hidden" name="page" value="">
+  {%- if results.current_type != blank or results.current_vendor != blank -%}
+    <input type="hidden" name="q" value="{{ results.current_vendor | default: results.current_type | escape }}">
+  {%- endif -%}
+  {%- if results.sort_by != blank -%}
+    <input type="hidden" name="sort_by" value="{{ results.sort_by }}">
+  {%- endif -%}
+  {%- if request.page_type == 'search' -%}
+    <input type="hidden" name="q" value="{{ results.terms | escape }}">
+  {%- endif -%}
+
+  <div class="c_nav_filter">
+    <div class="facets-scroll-wrapper">
+      <div class="facets-scroll-inner">
+        {%- for filter in results.filters -%}
+          {% if filter.label == 'Category' %}
+            {% liquid
+              for filter_value in filter.values
+                if filter_value.count == 0 and filter_value.active == false and section.settings.show_empty_filter_values == false
+                  continue
+                endif
+                if filter_value.label == 'Men' or filter_value.label == 'women' or filter_value.label == 'not_valid'
+                  continue
+                endif
+
+                assign value_id_prefix = id_prefix | append: '-' | append: forloop.index
+
+                if section.settings.show_color_swatch and color_label_list contains downcase_label
+                  render 'swatch' with 'color', allow_multiple: true, selected: filter_value.active, value: filter_value.label, name: filter_value.param_name, show_tooltip: true, id_prefix: value_id_prefix
+                else
+                  if section.settings.show_filter_values_count
+                    assign label = filter_value.label | append: ' (' | append: filter_value.count | append: ')'
+                  else
+                    assign label = filter_value.label | replace: 'Man', ''
+                  endif
+
+                  render 'checkbox', hide_checkbox: true, label: label, name: filter_value.param_name, type:'radio', value: filter_value.value, checked: filter_value.active, id_prefix: value_id_prefix
+                endif
+              endfor
+            %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</form>

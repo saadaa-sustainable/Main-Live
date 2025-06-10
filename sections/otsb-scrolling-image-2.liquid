@@ -1,0 +1,526 @@
+{% render 'otsb-scrolling-image-base' %}
+
+{% schema %}
+{
+  "name": "OT: Scrolling Images #2",
+  "class": "otsb__root section section-scroll-banner x-section",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer", "aside"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Remove Trademark Free? [Chat with us](https:\/\/go.crisp.chat\/chat\/embed\/?website_id=5e366ec4-30b5-4074-abce-ef95ae74b337)"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Scrolling Images",
+      "label": "Heading"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 50,
+      "max": 200,
+      "step": 10,
+      "unit": "%",
+      "label": "Heading size",
+      "default": 100
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "harmonia_sans_n7"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "default": "h2",
+      "label": "Heading tag",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "p",
+          "label": "p"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "default": "center",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "default": "<p>You can add a description here or leave it blank to remove this line</p>",
+      "label": "Text"
+    },
+    {
+      "type": "font_picker",
+      "id": "text_font",
+      "label": "Font",
+      "default": "harmonia_sans_n4"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "default": 100,
+      "max": 200,
+      "min": 50,
+      "step": 10,
+      "unit": "%",
+      "label": "Text size"
+    },
+    {
+      "type": "header",
+      "content": "Scrolling"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_border_scroll",
+      "default": false,
+      "label": "Show scroll borders"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 6,
+      "max": 200,
+      "step": 2,
+      "unit": "s",
+      "label": "Speed",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left to right"
+        },
+        {
+          "value": "right",
+          "label": "Right to left"
+        }
+      ],
+      "default": "right",
+      "label": "Direction"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_hover",
+      "default": true,
+      "label": "Pause on hover"
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "select",
+      "id": "title_position",
+      "default": "col",
+      "label": "Image title position",
+      "options": [
+        {
+          "value": "row-reverse",
+          "label": "Left"
+        },
+        {
+          "value": "col",
+          "label": "Bottom"
+        },
+        {
+          "value": "row",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 50,
+      "max": 200,
+      "step": 10,
+      "unit": "%",
+      "label": "Image title size",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "min": 50,
+      "max": 200,
+      "step": 10,
+      "unit": "%",
+      "label": "Title size mobile",
+      "default": 80
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Image title font",
+      "default": "itc_avant_garde_gothic_n6"
+    },
+    {
+      "type": "select",
+      "id": "title_alignment",
+      "default": "center",
+      "label": "Image title alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "corner_image",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Corner radius",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Natural"
+        },
+        {
+          "value": "100",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "75",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "56",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "133",
+          "label": "Standard (3:4)"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "133",
+      "label": "Image ratio"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_lazyload",
+      "label": "Lazy-load images",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_light",
+      "label": "Section background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "slide_bg_light",
+      "label": "Slide background",
+      "default": "#F2F2F2"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#212020"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Image title",
+      "default": "#212020"
+    },
+    {
+      "type": "color",
+      "id": "line_border_color",
+      "label": "Line and borders",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "color_text_link",
+      "label": "Text link",
+      "default": "#334FB4"
+    },
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "image_size",
+      "min": 100,
+      "max": 300,
+      "step": 2,
+      "unit": "px",
+      "label": "Image width",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "title_width",
+      "label": "Image title width",
+      "max": 300,
+      "min": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 300,
+      "info": "Apply only for image title: left - right."
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": true,
+      "label": "Make section full width"
+    },
+    {
+      "type": "checkbox",
+      "id": "padding_full_width",
+      "default": true,
+      "label": "Enable side padding",
+      "info": "Add left and right padding when section is full-width."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_section_divider",
+      "default": false,
+      "label": "Show section divider"
+    },
+    {
+      "type": "range",
+      "id": "space_block",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Block spacing",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "range",
+      "id": "image_size_mobile",
+      "min": 100,
+      "max": 300,
+      "step": 2,
+      "unit": "px",
+      "label": "Image width",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "title_width_mobile",
+      "label": "Image title width",
+      "max": 300,
+      "min": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 100,
+      "info": "Apply only for image title: left - right."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_section_divider_mobile",
+      "default": false,
+      "label": "Show section divider"
+    },
+    {
+      "type": "range",
+      "id": "space_block_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Block spacing",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 12
+    }
+  ],
+  "max_blocks": 16,
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Image title"
+        },
+        {
+          "type": "url",
+          "id": "image_link",
+          "label": "Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_new_window",
+          "default": false,
+          "label": "Open this link in a new window"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "OT: Scrolling Image #2",
+      "blocks": [
+        {
+          "type": "image",
+          "settings": {
+            "title": "New Arrivals"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Plant Gifts"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Green Houseplants"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Pots"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Balcony Plants"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

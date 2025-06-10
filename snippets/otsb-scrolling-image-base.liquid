@@ -1,0 +1,385 @@
+{% liquid
+  if settings.heading_base_size != blank
+    assign heading_size = settings.heading_base_size | times: section.settings.heading_size | times: 0.000225
+  else
+    assign heading_size = section.settings.heading_size | times: 100 | times: 0.0004
+  endif
+  if settings.heading_scale
+    assign heading_size = heading_size | times: settings.heading_scale | times: 0.01 
+  endif
+  assign title_size = section.settings.title_size | times: 0.01
+  assign mobile_title_size = section.settings.mobile_title_size | times: 0.01
+  if settings.body_scale
+    assign title_size = title_size | times: settings.body_scale | times: 0.01
+    assign mobile_title_size = mobile_title_size | times: settings.body_scale | times: 0.01
+  endif
+  assign num_loop = 8
+  assign number = 1
+  if section.blocks.size > 2
+    assign num_loop = 4
+    assign number = 2
+  endif
+  if section.blocks.size > 5
+    assign num_loop = 2
+  endif
+  if section.blocks.size > 7
+    assign num_loop = 1
+    assign number = 1
+  endif
+  assign duration = section.settings.speed | times: number
+
+  assign image_ratio = section.settings.image_ratio
+%}
+{% if request.design_mode %}
+  <style>
+    .otsb_nope {
+      display: none !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      opacity: 0 !important;
+    }
+    ._otsb_warning {
+      position: relative;
+      box-shadow: 0rem 0.1875rem 0.0625rem -0.0625rem rgba(26, 26, 26, 0.07);
+      border-radius: 1rem;
+    }
+    ._otsb_warning::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      box-shadow: 0.0625rem 0rem 0rem 0rem rgba(0, 0, 0, 0.13) inset, -0.0625rem 0rem 0rem 0rem rgba(0, 0, 0, 0.13) inset, 0rem -0.0625rem 0rem 0rem rgba(0, 0, 0, 0.17) inset, 0rem 0.0625rem 0rem 0rem rgba(204, 204, 204, 0.5) inset;
+      border-radius: 1rem;
+      pointer-events: none;
+      mix-blend-mode: luminosity;
+    }
+  </style>
+  <div x-data="otsb_script_require" class="page-width" style="margin-top:36px;margin-bottom:36px">
+    <div class="_otsb_warning">
+      <div style="border-top-left-radius:1rem;border-top-right-radius:1rem;border:1px solid #fcaf0a;background:#fcb827;padding:1rem">
+        <div style="align-items:center;gap:8px;display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:space-between">
+          <div style="display:flex;gap:4px;flex-direction:row;flex-wrap:nowrap;justify-content:space-between">
+            <span style="display:block;height:20px;width:20px;max-height:100%;max-width:100%;margin:auto">
+              <svg viewBox="0 0 20 20" class="Polaris-Icon__Svg" focusable="false" aria-hidden="true"><path d="M10 6.75a.75.75 0 0 1 .75.75v3.5a.75.75 0 1 1-1.5 0v-3.5a.75.75 0 0 1 .75-.75Z"></path><path d="M11 13.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path><path fill-rule="evenodd" d="M10 3.5c-1.045 0-1.784.702-2.152 1.447a449.26 449.26 0 0 1-2.005 3.847l-.028.052a403.426 403.426 0 0 0-2.008 3.856c-.372.752-.478 1.75.093 2.614.57.863 1.542 1.184 2.464 1.184h7.272c.922 0 1.895-.32 2.464-1.184.57-.864.465-1.862.093-2.614-.21-.424-1.113-2.147-2.004-3.847l-.032-.061a429.497 429.497 0 0 1-2.005-3.847c-.368-.745-1.107-1.447-2.152-1.447Zm-.808 2.112c.404-.816 1.212-.816 1.616 0 .202.409 1.112 2.145 2.022 3.88a418.904 418.904 0 0 1 2.018 3.875c.404.817 0 1.633-1.212 1.633h-7.272c-1.212 0-1.617-.816-1.212-1.633.202-.408 1.113-2.147 2.023-3.883a421.932 421.932 0 0 0 2.017-3.872Z"></path></svg>
+            </span>
+            <h2 style="overflow-wrap:anywhere;word-break:normal;font-size:100%;font-weight:650;line-height:1.25;color:rgb(37,26,0)">App Embeds Are Disabled</h2>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1rem;color:rgb(37,26,0)">
+        <p>To use this section, the app embeds of OT: Theme Sections must be enabled in the theme editor. Please follow these steps to activate them:</p>
+        <ul>
+          <li>In the left panel, click the last icon that says <b>“App embeds”</b>.</li>
+          <li>Enter <b>“OT”</b> on the search bar to quickly find and embed the apps from OT: Theme Sections.</li>
+          <li>Turn on the Toggle buttons of "Section Builder Script" and "Section Builder Style", then click <b>Save</b>.</li>
+        </ul>
+        <p>Please refer to the User Guide <a href="https://support.omnithemes.com/blogs/ot-theme-sections-get-started/1-embed-app-to-shopify-theme" target="_blank">here</a></p>
+        <p>For further support: feel free to contact us at <a href="mailto:support@omnithemes.com">support@omnithemes.com</a>!</p>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<style>#shopify-section-{{section.id}} .otsb_trademark_root {user-select:none;color:#999;font-size:.75em;text-align:right;margin-top:2.5rem}#shopify-section-{{section.id}} .otsb_trademark_root a {color:#999;background:none;text-decoration: none;}</style>
+<div class="otsb__root otsb_nope" x-data="otsb_script_1">
+  {%- capture styles -%}
+  {% style %}
+    {{ section.settings.heading_font  | font_face: font_display: 'swap' }}
+    {{ section.settings.title_font  | font_face: font_display: 'swap' }}
+    .otsb__root .heading--{{ section.id }} {
+      font-size: {{ heading_size | times: 0.6 }}rem;
+    }
+    @media screen and (min-width: 768px) {
+      .otsb__root .heading--{{ section.id }} {
+       font-size: {{ heading_size }}rem;
+      }
+    }
+    #shopify-section-{{ section.id }}{
+    {% if section.settings.line_border_color.alpha != 0.0 %}
+        --colors-line-and-border: {{ section.settings.line_border_color.red }},{{ section.settings.line_border_color.green }},{{ section.settings.line_border_color.blue }};
+    {% else %}
+        --colors-line-and-border: var(--color-foreground);
+    {% endif %}
+    }
+    #shopify-section-{{ section.id }} a:not([href]) {
+      cursor: unset;
+    }
+    .corner--{{ section.id }} {
+    border-radius: {{ section.settings.corner_image }}px;
+    }
+    .otsb__root .heading--{{ section.id }} {
+      {% if section.settings.heading_color.alpha != 0.0 %}
+        --colors-heading: {{ section.settings.heading_color.red }}, {{ section.settings.heading_color.green }}, {{ section.settings.heading_color.blue }};
+      {% endif %}
+      font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+      font-style: {{ section.settings.heading_font.style }};
+      font-weight: {{ section.settings.heading_font.weight }};
+    }
+    .section-{{ section.id }} {
+    --duration : {{ duration }}s;
+    --direction: {% if section.settings.direction == 'left' %}reverse{% else %}normal{% endif %};
+    {% unless section.settings.color_text_light.alpha == 0.0 %}
+        --colors-text: {{ section.settings.color_text_light.red }},{{ section.settings.color_text_light.green }},{{ section.settings.color_text_light.blue }};
+    {% endunless %}
+    {% unless section.settings.line_border_color.alpha == 0.0 %}
+        --colors-line-and-border: {{ section.settings.line_border_color.red }}, {{ section.settings.line_border_color.green }}, {{ section.settings.line_border_color.blue }};
+    {% endunless %}
+    }
+    .section-{{ section.id }} .text-color-secondary {
+    {% unless section.settings.color_text_light_2.alpha == 0.0 %}
+        color: {{ section.settings.color_text_light_2 }};
+    {% else %}
+        color: #898989;
+    {% endunless %}
+    }
+    {% if section.settings.pause_hover %}
+        .section-{{ section.id }}:hover .el_animate {
+        animation-play-state: paused;
+        }
+    {% endif %}
+    .title-color-{{ section.id }} {
+      {% if section.settings.title_color.alpha != 0.0 %}
+          --color-foreground: {{ section.settings.title_color.red }},{{ section.settings.title_color.green }},{{ section.settings.title_color.blue }};
+      {% endif %}
+      font-family: {{ section.settings.title_font.family }}, {{ section.settings.title_font.fallback_families }};
+      font-style: {{ section.settings.title_font.style }};
+      font-weight: {{ section.settings.title_font.weight }};
+    }
+    .title-color-{{ section.id }} {
+      color: rgba(var(--color-foreground));
+      white-space: normal;
+      {% if section.settings.title_position == "col" %}
+      max-width: {{ section.settings.image_size_mobile }}px;
+      padding-top: 10px;
+      {% else %}
+      width: {{ section.settings.title_width_mobile }}px;
+      {% endif %}
+    }
+    .space-blocks-{{ section.id }} {
+    gap: {{ section.settings.space_block_mobile }}px;
+    }
+    .bg-{{ section.id }} {
+    background: {{ section.settings.bg_light }};
+    }
+    .slide-bg-{{ section.id }} {
+      background: {{ section.settings.slide_bg_light }};
+    }
+    .dark .bg-{{ section.id }} {
+    {% if section.settings.bg_dark == blank %}
+        background: transparent;
+    {% else %}
+        background: {{ section.settings.bg_dark }};
+    {% endif %}
+    }
+    .scrolling-image-{{ section.id }} {
+      width: {{ section.settings.image_size_mobile }}px;
+      flex-direction: column;
+    }
+    .scroll-list-heading-{{ section.id }} {
+      flex-direction: column;
+    }
+    .title-color-{{ section.id }} {
+      font-size: calc({{ mobile_title_size }}*1.5rem);
+    }
+    @media (min-width: 767px){
+    .space-blocks-{{ section.id }} {
+    gap: {{ section.settings.space_block }}px;
+    }
+    .scrolling-image-{{ section.id }} {
+      width: {{ section.settings.image_size }}px;
+      flex-direction: column;
+    }
+    .title-color-{{ section.id }} {
+      {% if section.settings.title_position == "col" %}
+      max-width: {{ section.settings.image_size }}px;
+      padding-top: 10px;
+      {% else %}
+      width: {{ section.settings.title_width }}px;
+      {% endif %}
+      font-size: calc({{ title_size }}*1.5rem);
+      min-height: 2em; /* Chiều cao tối thiểu để giữ bố cục */
+      margin-top: auto;
+    }
+  }
+  {% for block in section.blocks %}
+    {% if block.type == "image" %}
+    {% if block.settings.image != blank %}
+      {% liquid
+        assign w_img = block.settings.image.aspect_ratio | times: block.settings.height_image
+        if block.settings.image == blank and image_ratio == "auto"
+          assign image_ratio = 100
+        endif
+      %}
+        .img-{{ block.id }} {
+        width: {{ w_img }}px;
+        height: {{ block.settings.height_image }}px;
+        }
+        {% if image_ratio == "auto" %}
+          .scrolling-image-{{ block.id }} .logo-image {
+            padding-bottom: {{ 100 | divided_by: block.settings.image.aspect_ratio }}%;
+          }
+          @media screen and (min-width: 1024px) {
+          .scrolling-image-{{ block.id }} .logo-image {
+            padding-bottom: {{ 100 | divided_by: block.settings.image.aspect_ratio }}%;
+          }
+          }
+        {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  {% endstyle %}
+  {%- endcapture -%}
+  {% comment %} {%- assign before =  styles.size -%} {% endcomment %}
+{%- assign styles =  styles | strip_newlines | split: " " | join: " " | split: "*/" -%}
+{%- assign minified_style = "" -%}
+{%- for word in styles -%}
+	{%- assign new_word = word | split: "/*" | first | strip | replace: "; ", ";" | replace: "} ", "}" | replace: "{ ", "{" | replace: " {", "{" -%}
+    {%- assign minified_style = minified_style | append: new_word -%}
+{%- endfor -%}
+{% comment %} /* CSS minifed: {{ before }} --> {{ minified_style.size }} */ {% endcomment %}
+{{- minified_style  }}
+  {% capture content %}
+    {% for block in section.blocks %}
+      {% if block.type == "image" %}
+      <div class="scrolling-image-{{ block.id }}{% unless section.settings.title_position == "col" %} {% if block.settings.title != blank %}gap-5 {% endif %} {% endunless %} {% if section.settings.title_position == "col" or section.settings.title_position == "row-reverse" and block.settings.title != blank %} flex-{{ section.settings.title_position }}{% endif %} flex items-center space-block-{{ block.id }}"> 
+          <div class="scrolling-image-{{ section.id }}  overflow-hidden relative corner--{{ section.id }} {% if section.settings.image_ratio == 'round' %} rounded-full{% endif %}">
+          <a {%- if block.settings.image_link != blank %} href="{{ block.settings.image_link }}"{% if block.settings.open_new_window %} target="_blank"{% endif %}{% else %} role="link" aria-disabled="true"{% endif %} class="relative logo-image block h-full w-full disable-effect {% if section.settings.image_ratio == 'round' %} pb-[100%]{% endif %}
+          {% if image_ratio != "auto" and block.settings.image_logo != blank %}
+          {% if section.settings.columns_mobile != "auto" %} pb-[{{ image_ratio }}%]{% else %} pb-[100%]{% endif %}
+          {% if section.settings.columns_desktop != 0 %} lg:pb-[{{ image_ratio }}%]{% else %} lg:pb-0{% endif %}
+        {% elsif block.settings.image_logo == blank %}
+          {% if image_ratio != "auto" %} pb-[{{ image_ratio }}%]{% else %} pb-[100%]{% endif %}
+        {% endif %}"
+    >
+    {% if block.settings.image != blank %}
+      <div class="w-full h-full overflow-hidden top-0 left-0 duration-300 transition ease-out flex justify-center items-center justify-center absolute
+        {% if columns_mobile != 0 %} absolute{% endif %}
+        {% if section.settings.columns_desktop != 0 %} lg:absolute{% else %} lg:relative{% endif %}"
+      >
+          <img
+            srcset="{{ block.settings.image | image_url: width: 250 }} 250w,
+            {{ block.settings.image | image_url: width: 250 }} 450w,
+            {{ block.settings.image | image_url: width: 300 }} 750w,
+            {{ block.settings.image | image_url: width: 400 }} 900w,
+            {{ block.settings.image | image_url: width: 500 }} 1100w,
+            {{ block.settings.image | image_url: width: 700 }} 1500w"
+            src="{{ block.settings.image | image_url: width: block.settings.image.width }},
+            {{ block.settings.image | image_url: width: block.settings.image.width }}"
+            alt="{{ block.settings.image.alt | escape }}"
+            loading="{% if section.settings.is_lazyload %}lazy{%  else %}eager{% endif %}"
+            width="{{ block.settings.image.width }}"
+            height="{{ block.settings.image.height }}"
+            class="h-full w-full object-cover"
+            style="object-position: {{ block.settings.image.presentation.focal_point }};"
+          />
+      </div>
+    {% else %}
+      {% liquid
+          assign class = "h-full w-full"
+          if section.settings.columns_desktop == 0
+              assign class = class | append: " md:relative"
+          else
+              assign class = class | append: " md:absolute md:top-0 md:left-0"
+          endif
+      %}
+      <div class="flex-1 flex justify-center items-center bg-[#c9c9c9] top-0 left-0 h-full w-full absolute">
+          {% render 'otsb-icon-placeholder', icon: 'icon-image' %}
+      </div>
+    {% endif %}
+  </a>
+  </div>
+      {%  if block.settings.title != blank %}
+        <p class="title-color-{{ section.id }} {% if section.settings.title_position == "col" %} w-full{% endif %} text-{{ section.settings.title_alignment }} p-break-words otsb-rte">{{ block.settings.title  }}</p>
+      {%  else %}
+        <p class="title-empty-{{ section.id }} block"></p>
+      {% endif %}
+      </div>
+    {% endif %}
+    {% endfor %}
+  {% endcapture %}
+{% render 'otsb-section-divider' %}
+{% if section.settings.padding_full_width and section.settings.full_width %}
+  <div class="otsb-padding-full-width-{{ section.id }}">
+{% endif %}
+  <div class="bg-{{ section.id }} pt-[{{ section.settings.padding_top_mobile }}px] md:pt-[{{ section.settings.padding_top }}px]{% unless section.settings.title_position == "col" %} pb-[{{ section.settings.padding_bottom_mobile }}px] md:pb-[{{ section.settings.padding_bottom }}px]{% endunless %}{% if section.settings.padding_full_width and section.settings.full_width %} md:pl-5 md:pr-5{% endif %}">
+    <div class="relative{% if section.settings.full_width %} md:pl-0 md:pr-0{% else %} page-width otsb-page-width mx-auto{% endif %}{% if section.settings.full_width_mobile %} full-width-mobile{% else %} pl-5 pr-5{% endif %}">
+    <div class="otsb-scrolling-image">
+    <div
+        class="scroll-list-heading-{{ section.id }} text-{{ section.settings.heading_alignment }} mb-5 flex items-{{ section.settings.heading_alignment }}"
+      >
+        {% unless section.settings.heading == blank %}
+          <{{ section.settings.heading_tag }}
+            class="heading--{{ section.id }} otsb-section-header otsb-h2 block leading-tight flex-auto otsb-p-break-words"
+          >
+            {{- section.settings.heading | escape -}}
+          </{{ section.settings.heading_tag }}>
+        {% endunless %}
+        {%  liquid 
+            assign text_size = section.settings.text_size | times: 0.01
+            if settings.body_scale
+              assign text_size = text_size | times: settings.body_scale | times: 0.01
+            endif
+        %}
+        {% style %}
+          {{ section.settings.text_font  | font_face: font_display: 'swap' }}
+          .content-text-{{ section.id }} {
+            {% if section.settings.color_text.alpha != 0.0 %}
+              --color-foreground: {{ section.settings.color_text.red }},{{ section.settings.color_text.green }},{{ section.settings.color_text.blue }};
+            {% endif %}
+            {% if section.settings.color_text_link.alpha != 0 %}
+              --colors-text-link: {{ section.settings.color_text_link.red }},{{ section.settings.color_text_link.green }},{{ section.settings.color_text_link.blue }};
+            {%  else %}
+              --colors-text-link: var(--color-link);
+            {% endif %}
+          }
+          .content-text-{{ section.id }} {
+            color: rgba(var(--color-foreground));
+            font-family: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};
+            font-style: {{ section.settings.text_font.style }};
+            font-weight: {{ section.settings.text_font.weight }};
+            font-size: calc({{ text_size }}*1.6rem);
+          }
+          @media (max-width: 768px) {
+            .content-text-{{ section.id }} {
+              font-size: calc({{ text_size }}*1.5rem);
+            }
+          }
+          {% endstyle %}
+          {%- if section.settings.text != blank -%}
+            <div class="lg:mt-1 p-break-words content-text-{{ section.id }} otsb-rte">{{ section.settings.text }}</div>
+          {%- endif -%}
+      
+      </div>
+    <div x-intersect.once.margin.200px="$store.xScrollPromotion.load($el)" class="slide-bg-{{ section.id }} {% if section.settings.show_border_scroll %} border-y border-solid{% endif %} text-[rgb(var(--colors-text))] section-{{ section.id }} ltr"
+      >
+      <div class="w-full overflow-hidden">
+        <div class="flex flex-nowrap whitespace-nowrap min-w-full space-blocks-{{ section.id }} pt-[20px] pb-[20px]">
+    <div class="flex shrink-0 whitespace-nowrap el_animate element-{{ section.id }} space-blocks-{{ section.id }}">
+            {% for i in (1..num_loop) %}
+              {{ content }}
+            {% endfor %}
+          </div>
+          <div class="flex shrink-0 whitespace-nowrap el_animate space-blocks-{{ section.id }}">
+            {% for i in (1..num_loop) %}
+              {{ content }}
+            {% endfor %}
+          </div>
+          <div class="flex shrink-0 whitespace-nowrap el_animate space-blocks-{{ section.id }}">
+            {% for i in (1..num_loop) %}
+              {{ content }}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  {% if section.settings.padding_full_width and section.settings.full_width %}
+    </div>
+  {% endif %}
+</div>
+</div>
+</div>

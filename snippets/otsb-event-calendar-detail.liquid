@@ -1,0 +1,263 @@
+{% liquid
+  assign btnType = ''
+  case section.settings.button_edges_type
+    when 'rounded_corners'
+      assign btnType = 'otsb-btn-rounded-corners'
+    when 'rounded'
+      assign btnType = 'otsb-btn-rounded'
+    when 'mixed'
+      assign btnType = 'otsb-btn-mixed'
+    else
+      assign btnType = ''
+  endcase
+%}
+{% liquid
+  assign btnAnimation = ''
+  case section.settings.button_animation
+    when 'slide'
+      assign btnAnimation = 'otsb-btn__slide'
+    when 'fill_up'
+      assign btnAnimation = 'otsb-btn__fill_up'
+    when 'underline'
+      assign btnAnimation = 'otsb-btn__underline'
+    when 'sliced'
+      assign btnAnimation = 'otsb-btn__sliced'
+    else
+      assign btnAnimation = ''
+    endcase
+  
+  assign otsb_button_classes = btnType | append: ' ' | append: btnAnimation
+%}
+{% style %}
+  .otsb-event-calendar-pop-{{ section.id }} .atcb-list {
+    {% if section.settings.dropdown_bg_color.alpha != 0 %}
+      --background-color: {{ section.settings.dropdown_bg_color.red }}, {{ section.settings.dropdown_bg_color.green }}, {{ section.settings.dropdown_bg_color.blue }}, {{ section.settings.dropdown_bg_color.alpha }};
+    {% else %}
+      --background-color: transparent;
+    {% endif %}
+  }
+{% endstyle %}
+<div
+  x-data=""
+  x-show="$store.xEventCalendarDetail.show && $store.xEventCalendarDetail.sectionID == '{{ section.id }}'"
+  x-cloak
+  class="otsb-{{ section.id }} event-calendar-popup otsb-event-calendar-pop-{{ section.id }} flex items-end md:items-center fixed top-0 left-0 right-0 bottom-0 z-50 bg-[#acacac] bg-opacity-30"
+  {% if request.design_mode %}x-init="$store.xEventCalendarDetail.handleEventSelect()"{% endif %}
+>
+  <div
+    x-show="$store.xEventCalendarDetail.show"
+    class="w-full mx-auto md:w-3/4 lg:w-3/5 max-w-[650px] pb-5 pt-10 md:pt-14 md:pb-14 relative md:pl-2.5 md:pr-2.5 lg:ml-auto lg:mr-auto bg-[rgba(var(--color-background),1)] shadow-[0_0_6px_-4px_rgba(var(--colors-text,36,36,36,1))]{% if section.settings.edges_type == 'rounded_corners' %} rounded-lg{% endif %}"
+    x-transition:enter="transition-all ease-in-out duration-300"
+    x-transition:enter-start="opacity-0 transform md:-translate-x-1/3 translate-y-1/3 md:translate-y-0"
+    x-transition:enter-end="opacity-100 transform md:translate-x-0 translate-y-0"
+    x-transition:leave="transition-all ease-in-out duration-300"
+    x-transition:leave-end="opacity-0 transform md:translate-x-1/3 translate-y-1/3 md:translate-y-0"
+    @click.away="$store.xEventCalendarDetail.close()"
+  >
+    <button
+      class="absolute cursor-pointer z-10 top-1 right-2 lg:top-3 md:right-8 rtl:right-auto rtl:left-2 rtl:md:left-8 pb-3 pt-3 pl-4 pr-4 h-11 w-11"
+      aria-label="button-close"
+      @click="$store.xEventCalendarDetail.close()"
+    >
+      {% render 'otsb-icon-alls', icon: 'icon-close' %}
+    </button>
+
+    <div class="pl-5 pr-5 lg:pr-10 lg:pl-10 relative bg-[rgba(var(--background-color),1)] overflow-y-auto overflow-x-hidden scrollbar-body max-h-[calc(85vh-96px)] md:max-h-[80vh]">
+      <div
+        x-data='{
+          item: JSON.parse(JSON.stringify(Alpine.store("xEventCalendarDetail").eventDetail)),
+          setItem() {
+            this.item = JSON.parse(JSON.stringify(Alpine.store("xEventCalendarDetail").eventDetail))
+          }
+        }'
+        x-effect="setItem()"
+      >
+        <div class="relative">
+          <h2 class="otsb-h2 h2 otsb-title text-[rgba(var(--colors-heading))] text-center p-break-words" x-html="item.title">
+          </h2>
+
+          <div
+            class="relative text-center mt-3.5 flex gap-1.5 flex-wrap grow justify-center"
+            x-data="xEventCalendar(false)"
+          >
+            <template x-cloak x-if="item.offer_tickets && item.ticket_link">
+              <a
+                :href="item.ticket_link"
+                class="otsb-button border button--{{ section.id }} flex flex-row rtl:flex-row-reverse items-center empty:hidden !pl-5 !pr-5 md:pl-6 md:pr-6 pt-2.5 pb-2.5 md:pt-3 md:pb-3 leading-normal {{ otsb_button_classes }}"
+                @click="open = !open"
+                :class="(item.ticket_button_label_style == 'primary') ? 'otsb-btn__solid': 'otsb-button-outline'"
+              >
+                <span class="otsb-btn-text is-focus-button:opacity-0" x-html="item.ticket_button_label"></span>
+                {% if section.settings.button_animation == 'sliced' %}
+                  <span x-cloak class="otsb-btn-icon opacity-0 -translate-x-[5px]" x-show="item.ticket_button_label_style == 'primary'">
+                    {% if section.settings.custom_icon_button != blank %}
+                    {{ section.settings.custom_icon_button }}
+                    {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 20 20" fill="none" style="fill:none">
+                      <path d="M4.25 9.49927H14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M9.5 4.24927L14.75 9.49927L9.5 14.7493" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    {% endif %}
+                  </span>
+                {% endif %}
+              </a>
+            </template>
+            <template x-cloak x-if="item.offer_tickets && !item.ticket_link">
+              <button
+                class="otsb-button border button--{{ section.id }} flex flex-row rtl:flex-row-reverse items-center empty:hidden !pl-5 !pr-5 md:pl-6 md:pr-6 pt-2.5 pb-2.5 md:pt-3 md:pb-3 leading-normal opacity-60 cursor-not-allowed {{ otsb_button_classes }}"
+                @click="open = !open"
+                :class="(item.ticket_button_label_style == 'primary') ? 'otsb-btn__solid': 'otsb-button-outline'"
+              >
+                <span class="otsb-btn-text is-focus-button:opacity-0" x-html="item.ticket_button_label"></span>
+                {% if section.settings.button_animation == 'sliced' %}
+                  <span x-cloak class="otsb-btn-icon opacity-0 -translate-x-[5px]" x-show="item.ticket_button_label_style == 'primary'">
+                    {% if section.settings.custom_icon_button != blank %}
+                    {{ section.settings.custom_icon_button }}
+                    {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewbox="0 0 20 20" fill="none" style="fill:none">
+                      <path d="M4.25 9.49927H14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M9.5 4.24927L14.75 9.49927L9.5 14.7493" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    {% endif %}
+                  </span>
+                {% endif %}
+              </button>
+            </template>
+            <div
+              class="relative inline-block"
+              @click.away="open = false"
+            >
+              <button
+                class="otsb-button button--{{ section.id }} flex flex-row rtl:flex-row-reverse items-center relative border empty:hidden pl-6 pr-6 pt-2.5 pb-2.5 md:pt-3 md:pb-3 leading-normal {{ btnType }} {{ btnAnimation }} otsb-btn__no-sliced"
+                @click="open = !open"
+                :class="(item.show_button_style == 'primary') ? 'otsb-btn__solid': 'otsb-button-outline'"
+              >
+                <span x-html="item.button_label_add_calendar" class="otsb-btn-text is-focus-button:opacity-0"></span>
+                <span class="w-2.5 relative transition-none duration-200 inline-block ml-1.5 rtl:ml-0 rtl:mr-1.5" :class="open ? 'rotate-180' : 'top-[1px]'">
+                  {% render 'otsb-icon-alls', icon: 'icon-caret' %}
+                </span>
+              </button>
+              <div
+                class="atcb-list left-0 w-full flex flex-col gap-y-4 md:max-w-[15rem] absolute top-full z-20 bg-[rgba(var(--background-color))] shadow-md pt-5 pb-5 pl-5 pr-5"
+                x-cloak
+                x-show="open"
+                role="list"
+              >
+                <button
+                  class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                  role="link"
+                  data-option-number="1"
+                  id="atcb-btn-1-apple"
+                  aria-label="Apple"
+                  @click="addToCal('apple'); open = false"
+                >
+                  <span class="atcb-text inline-block button-link otsb-hover-text-link">Apple</span>
+                </button>
+                <button
+                  class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                  role="link"
+                  data-option-number="2"
+                  id="atcb-btn-1-google"
+                  aria-label="Google"
+                  @click="addToCal('google'); open = false"
+                >
+                  <span class="atcb-text inline-block button-link otsb-hover-text-link">Google</span>
+                </button>
+                <button
+                  class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                  role="link"
+                  data-option-number="3"
+                  id="atcb-btn-1-outlookcom"
+                  aria-label="Outlook"
+                  @click="addToCal('outlook'); open = false"
+                >
+                  <span class="atcb-text inline-block button-link otsb-hover-text-link">Outlook</span>
+                </button>
+                <button
+                  class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                  role="link"
+                  data-option-number="4"
+                  id="atcb-btn-1-yahoo"
+                  aria-label="Yahoo"
+                  @click="addToCal('yahoo'); open = false"
+                >
+                  <span class="atcb-text inline-block button-link otsb-hover-text-link">Yahoo</span>
+                </button>
+                <button
+                  class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                  role="link"
+                  data-option-number="4"
+                  id="atcb-btn-1-ical"
+                  aria-label="Ical"
+                  @click="addToCal('ical'); open = false"
+                >
+                  <span class="atcb-text inline-block button-link otsb-hover-text-link">Ical</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-y-2 border-t pt-7 mt-7 mb-7" :class="item.show_end_date ? 'lg:flex-col' : 'lg:flex-row'">
+            <div x-show="item.date || item.time" x-cloak class="flex flex-wrap pl-[calc(17px+0.25rem)] rtl:pl-0 rtl:pr-[calc(17px+0.25rem)] relative">
+              <span class="w-[17px] h-[18px] inline-block absolute left-0 top-[calc((100%-18px)/2)] rtl:left-auto rtl:right-0">{% render 'otsb-icon-alls', icon: 'icon-clock' %}</span>
+              <span x-text="`${item.date}`"></span>
+              <span class="ml-2" x-text="` @ ${item.timeStart}`"></span>
+              <span x-show="item.show_end_date" class="ml-1"> - </span>
+              <template x-if="item.show_end_time">
+                <span class="ml-1">
+                  <span> - </span>
+                  <span class="ml-1" x-text="` ${item.timeEnd}`"></span>
+                </span>
+              </template>
+              <template x-if="item.show_end_date">
+                <span class="ml-1">
+                  <span x-text="`${item.end_date}`"></span><span class="ml-1" x-text="` @ ${item.timeEnd}`"></span>
+                </span>
+              </template>
+            </div>
+
+            <div x-show="item.location" x-cloak class="flex-1 grow flex pl-[calc(17px+0.25rem)] rtl:pl-0 rtl:pr-[calc(17px+0.25rem)] relative" :class="item.show_end_date ? 'lg:flex-col' : 'lg:ml-14'">
+              <span class="w-[17px] h-[18px] inline-block absolute left-0 top-[calc((100%-18px)/2)] rtl:left-auto rtl:right-0">{%- render 'otsb-icon-alls', icon: 'icon-location-1' -%}</span>
+              <span x-html="item.location"></span>
+            </div>
+          </div>
+          <div class="relative">
+            <div id="ImageBanner" class="overflow-hidden{% if section.settings.edges_type == 'rounded_corners' %} rounded-lg{% endif %}">
+              <template x-if="item.location">
+                <div x-data="xMap(item.location)" class="relative h-128" x-intersect="loadMap(item.location);" x-effect="$store.xEventCalendarDetail.show == false && removeMap()">
+                  <iframe src="" class="w-full h-full" title="Map"></iframe>
+                </div>
+              </template>
+              <div
+                class="relative w-full overflow-hidden h-128{% if section.settings.edges_type == 'rounded_corners' %} rounded-lg{% endif %}"
+                x-show="item.location == '' && item.image"
+              >
+                <img
+                  x-show="item.image"
+                  x-bind:src="`${ item.image }`"
+                  class="top-0 right-0 left-0 bottom-0 object-cover h-full w-full image-hover"
+                  loading="lazy"
+                  width="150"
+                  height="150"
+                />
+                <div class="bg-[#c9c9c9] absolute top-0 left-0 w-full h-full" x-show="!item.image">{%- render 'otsb-icon-placeholder', icon: 'icon-product', class: 'w-full h-full' %}</div>
+              </div>
+            </div>
+          </div>
+          <div id="EventDescription-{{ section.id }}" class="mt-7 otsb-rte">
+          </div>
+          <div x-show="item.location && item.image" class="relative w-full overflow-hidden h-128{% if section.settings.edges_type == 'rounded_corners' %} rounded-lg{% endif %}">
+            <img
+              x-show="item.image"
+              x-bind:src="`${ item.image }`"
+              class="top-0 right-0 left-0 bottom-0 object-cover h-full w-full otsb-image-hover"
+              loading="lazy"
+              width="150"
+              height="150"
+            />
+            <div class="bg-[#c9c9c9] absolute top-0 left-0 w-full h-full" x-show="!item.image">{%- render 'otsb-icon-placeholder', icon: 'icon-product', class: 'w-full h-full' %}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

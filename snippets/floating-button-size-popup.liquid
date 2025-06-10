@@ -1,0 +1,517 @@
+<!-- Sticky Bar & Overlay using Shopify Liquid for Variants -->
+<style>
+  @media (max-width: 768px) {
+    /* ---------- STICKY CART BAR ---------- */
+    #sticky-cart-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        background: #fff;
+        z-index: 1111;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.10);
+        display: none;
+        transition: transform 0.3s;
+        padding: 11px;
+    }
+    #sticky-cart-bar .scb-wrap {
+      display: flex;
+      width: 100%;
+    }
+    #sticky-cart-bar .scb-main-btn {
+      flex: 1;
+      margin: 0 16px;             /* inset from edges */
+      padding: 16px 0;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      background: #111;
+      color: #fff;
+      border-radius: 45px;        /* pill shape */
+      letter-spacing: 1px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    #sticky-cart-bar .scb-main-btn:active {
+      transform: scale(0.97);
+    }
+    #sticky-cart-bar .scb-main-btn[disabled] {
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    /* ---------- BACKDROP ---------- */
+#modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Don’t cover the bottom 56px (your sticky bar height) */
+  bottom: 56px;
+  background: rgba(0, 0, 0, 0.5);
+  /* sit below the sticky bar (z-1111) but below the overlay (z-1200) */
+  z-index: 1100;
+}
+#modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Don’t cover the bottom 56px (your sticky bar height) */
+  bottom: 56px;
+  background: rgba(0, 0, 0, 0.5);
+  /* sit below the sticky bar (z-1111) but below the overlay (z-1200) */
+  z-index: 1100;
+}
+
+
+    /* ---------- SIZE OVERLAY ---------- */
+  #size-overlay {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 101px;
+        background: #fff;
+        z-index: 1200;
+        display: none;
+        padding: 10px 16px 0px 16px;
+        animation: fadeInUp 0.2s;
+    }
+
+    @keyframes fadeInUp {
+      0% { transform: translateY(60px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    #size-overlay .overlay-header {
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: left;
+      margin-bottom: 10px;
+      color: #222;
+    }
+     #size-overlay .overlay-close {
+        position: absolute;
+        right: 18px;
+        top: 1px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #000;
+        cursor: pointer;
+    }
+}
+    .variant-container {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin-top: 10px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .variant-container::-webkit-scrollbar {
+      display: none;
+    }
+    .variant-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      min-height: 55px;
+    }
+    .variant-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+       
+        border-radius: 50%;
+        border: 0.5px solid #000;
+        background-color: #fff;
+        color: #000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s, border-color 0.3s;
+        padding: 0;
+    }
+    .variant-btn:hover {
+      border-color: #000;
+    }
+    .variant-btn.selected {
+      background-color: #fff8a5;
+      color: #000;
+      border-color: #000;
+    }
+    .variant-btn.out-of-stock {
+      color: #000;
+      border-color: #000;
+      cursor: not-allowed;
+      position: relative;
+    }
+    .variant-btn.out-of-stock::before {
+    content: "";
+    position: absolute;
+    top: -1%;
+    left: 53%;
+    width: 1px;
+    height: 105%;
+    background: #000;
+    transform: rotate(51deg) translateX(50%);
+    pointer-events: none;
+}
+    .stock-message {
+      position: absolute;
+      top: 80%;
+      width: 100%;
+      font-size: 8px;
+      margin-top: 0;
+      font-weight: bold;
+      text-align: center;
+      line-height: 1.2;
+      display: none;
+    }
+    .few-left { color: orange; }
+    .only-left { color: red; }
+    .variant-btn.selected ~ .stock-message {
+      display: block;
+    }
+
+  @media (min-width: 769px) {
+    #sticky-cart-bar,
+    #modal-backdrop,
+    #size-overlay {
+      display: none !important;
+    }
+  }
+
+
+
+
+  /* italic instruction, centered */
+#size-overlay .overlay-instruction {
+  margin: 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #000;
+  text-align: left;
+
+  /* the new divider */
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 16px;
+}
+
+/* flex container for “SIZE:” + link */
+#size-overlay .overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* “SIZE:” text styling */
+#size-overlay .overlay-header .overlay-title {
+  font-size: 13px;
+  color: #222;
+  text-transform: uppercase;
+}
+
+/* “VIEW SIZE CHART” link styling */
+#size-overlay .overlay-header .view-size-chart {
+    font-size: 0.8rem;
+    color: #000;
+    text-decoration: underline;
+}
+
+
+ .btn.ks-chart-modal-button, span.ks-chart-modal-link {
+  margin-bottom: 0px;
+}
+
+  .btn.ks-chart-modal-button {
+background-color: #fff !important;
+ border: none; 
+}
+
+  ._ks_text {
+    text-transform: capitalize;
+    font-size: 13px;
+
+  }
+
+
+
+  .ks-chart-modal-button>span.with-icon .kiwi-svg, .ks-chart-modal-link.with-icon .kiwi-svg {
+    width: 16px !important;
+    height: 20px !important;
+}
+
+  .btn.ks-chart-modal-button span.with-icon, span.ks-chart-modal-link.with-icon {
+    padding-left: 20px !important;
+}
+
+
+
+/* ----- Guarantee section - unique classes ----- */
+.guarantee-hstack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.guarantee-gap {
+  gap: 0.375rem;
+}
+.guarantee-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+.guarantee-tooltip .guarantee-tooltip-text {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: -376%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 12px;
+  border-radius: 6px;
+  width: 234px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.4;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 1000;
+}
+.guarantee-tooltip .guarantee-tooltip-text::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 74%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.1);
+}
+.guarantee-tooltip .guarantee-tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 74%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: #fff;
+}
+.guarantee-tooltip.guarantee-active .guarantee-tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+</style>
+
+<!-- Sticky Bar -->
+<div id="sticky-cart-bar">
+  <div class="scb-wrap">
+    <button class="scb-main-btn">SELECT A SIZE</button>
+  </div>
+{% unless template == 'product.exclusive-launch' %}
+  <div class="guarantee-hstack guarantee-gap" style="margin-top:10px;">
+    <svg stroke="rgb(34, 197, 160)" fill="rgb(34, 197, 160)" stroke-width="0"
+         viewBox="0 0 16 16" role="presentation" height="20px" width="20px"
+         xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 
+               0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 
+               0 0 0-1.06 1.06L6.97 11.03a.75.75 
+               0 0 0 1.079-.02l3.992-4.99a.75.75 
+               0 0 0-.01-1.05z"></path>
+    </svg>
+    <span style="font-size:13px;position: relative;top: 1px;">
+      7-Day Money Back Guarantee
+    </span>
+
+    <div class="guarantee-tooltip">
+      <img
+        src="https://cdn.shopify.com/s/files/1/0450/3476/6485/files/Group_2.svg?v=1747286143"
+        alt="info"
+        style="width:13px; height:13px; display:block;"
+      />
+      <div class="guarantee-tooltip-text">
+        Return or exchange within 7 days of delivery. Product must be unused with original packaging intact.
+      </div>
+    </div>
+  </div>
+{% endunless %}
+</div>
+
+
+<!-- Backdrop for Overlay -->
+<div id="modal-backdrop"></div>
+
+<!-- Overlay (hidden initially) -->
+<div id="size-overlay">
+  <button class="overlay-close" aria-label="Close">&times;</button>
+
+  <!-- instruction line -->
+  <p class="overlay-instruction">
+    Please select a size to add product to bag
+  </p>
+
+  <!-- size label + “view chart” link -->
+  <div class="overlay-header">
+    <span class="overlay-title">SIZE:</span>
+    <div id="KiwiSizingChart" data-display-mode="2"></div>
+  </div>
+
+  <div class="variant-container">
+    {% for variant in product.variants %}
+      <div class="variant-wrapper">
+        <button 
+          type="button"
+          class="variant-btn{% if variant.inventory_quantity == 0 %} out-of-stock{% endif %}"
+          data-value="{{ variant.option1 }}"
+          data-variant-id="{{ variant.id }}" 
+          data-quantity="{{ variant.inventory_quantity }}"
+          {% if variant.inventory_quantity == 0 %}disabled{% endif %}
+        >
+          {{ variant.option1 }}
+        </button>
+        <p class="stock-message">
+          {% if variant.inventory_quantity > 5 and variant.inventory_quantity <= 8 %}
+            <span class="few-left">Only Few Left</span>
+          {% elsif variant.inventory_quantity <= 5 and variant.inventory_quantity > 0 %}
+            <span class="only-left">Only {{ variant.inventory_quantity }} Left</span>
+          {% endif %}
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const productForm    = document.querySelector('form[action^="/cart/add"]');
+  if (!productForm) return;
+
+  const variantInput   = productForm.querySelector('[name="id"]');
+  const mainBtn        = document.querySelector('#sticky-cart-bar .scb-main-btn');
+  const stickyBar      = document.getElementById('sticky-cart-bar');
+  const sizeOverlay    = document.getElementById('size-overlay');
+  const modalBackdrop  = document.getElementById('modal-backdrop');
+  const closeOverlayBtn= sizeOverlay.querySelector('.overlay-close');
+
+  // determine when to show sticky bar
+  let threshold = 0;
+  const buyButtons = document.querySelector('.size_chart_container');
+  if (buyButtons) {
+    const rect = buyButtons.getBoundingClientRect();
+    threshold = rect.top + window.scrollY + rect.height;
+  }
+  function handleStickyBarVisibility() {
+    if (window.innerWidth > 768) {
+      stickyBar.style.display = 'none';
+      return;
+    }
+    stickyBar.style.display = window.scrollY > threshold ? 'block' : 'none';
+  }
+  window.addEventListener('scroll', handleStickyBarVisibility);
+  window.addEventListener('resize', handleStickyBarVisibility);
+  handleStickyBarVisibility();
+
+  let selectedVariantId = null;
+
+  mainBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+
+      if ( mainBtn.classList.contains('ready') && selectedVariantId ) {
+    // find and click the real submit button so your theme's AJAX drawer runs
+    const submitBtn = productForm.querySelector('[type="submit"]');
+    if (submitBtn) {
+      submitBtn.click();
+    } else {
+      // fallback if you don't have a visible submit in the form
+      productForm.requestSubmit();
+    }
+    closeOverlay();
+    return;
+  }
+
+
+    // otherwise open the overlay + backdrop
+    sizeOverlay.style.display     = 'block';
+    modalBackdrop.style.display   = 'block';
+    document.body.style.overflowY = 'hidden';
+
+    // highlight any previously chosen size
+    document.querySelectorAll('.variant-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.getAttribute('data-variant-id') === selectedVariantId);
+    });
+  });
+
+  function closeOverlay() {
+    sizeOverlay.style.display     = 'none';
+    modalBackdrop.style.display   = 'none';
+    document.body.style.overflowY = '';
+  }
+
+  closeOverlayBtn.addEventListener('click', closeOverlay);
+  document.addEventListener('mousedown', function(event) {
+    if (
+      sizeOverlay.style.display === 'block' &&
+      !sizeOverlay.contains(event.target) &&
+      !mainBtn.contains(event.target)
+    ) {
+      closeOverlay();
+    }
+  });
+
+  // variant selection
+  document.querySelectorAll('.variant-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      if (this.classList.contains('out-of-stock')) return;
+
+      document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('selected'));
+      this.classList.add('selected');
+
+      selectedVariantId = this.getAttribute('data-variant-id');
+      if (variantInput) {
+        variantInput.value = selectedVariantId;
+        variantInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+
+      mainBtn.textContent         = 'ADD TO CART';
+      mainBtn.classList.add('ready');
+      // keep overlay open so user can review stock message
+    });
+  });
+});
+
+
+
+// Toggle guarantee tooltip on click; close any other open one; close on outside click
+document.addEventListener('DOMContentLoaded', () => {
+  const tooltips = document.querySelectorAll('.guarantee-tooltip');
+  tooltips.forEach(tt => {
+    tt.addEventListener('click', e => {
+      e.stopPropagation();
+      // close others
+      tooltips.forEach(other => {
+        if (other !== tt) other.classList.remove('guarantee-active');
+      });
+      // toggle this one
+      tt.classList.toggle('guarantee-active');
+    });
+  });
+  // clicking anywhere else closes all
+  document.addEventListener('click', () => {
+    tooltips.forEach(tt => tt.classList.remove('guarantee-active'));
+  });
+});
+
+
+</script>

@@ -1,0 +1,497 @@
+{%- liquid
+    assign screen_md = 768
+    assign screen_lg = 1024
+    if settings.heading_base_size != blank
+        assign base_size_heading = settings.heading_base_size | times: 0.0225
+    else
+        assign base_size_heading = 100 | times: 0.0225
+    endif
+    assign font_size_heading = section.settings.heading_size_video | times: 0.02 | times: base_size_heading
+    if settings.text_base_size != blank
+        assign size_text = section.settings.text_size | times: settings.text_base_size | times: 0.0000875
+    else
+        assign size_text = section.settings.text_size | times: 185 | times: 0.0000875
+    endif
+    assign video_alt = section.settings.video_alt_text
+    assign size_text_h = section.settings.text_size | times: 0.01
+
+    assign check_video = false
+    if section.settings.video_url.type == 'youtube'
+        assign video_type = 'youtube'
+        assign check_video = true
+        assign video_id = section.settings.video_url.id
+    endif
+    if section.settings.video_url.type == 'vimeo'
+        assign video_type = 'vimeo'
+        assign check_video = true
+        assign video_id = section.settings.video_url.id
+    endif
+
+    if section.settings.video != null
+        assign video_type = 'video_select'
+        assign check_video = true
+    endif
+-%}
+{%-capture fake_object_fit_cover -%}
+    @media (min-aspect-ratio: 16/9) {
+        #shopify-section-{{ section.id }} .otsb__root .otsb-video-hero iframe {height: 1000%}
+    }
+    @media (max-aspect-ratio: 16 / 9) {
+        #shopify-section-{{ section.id }} .otsb__root .otsb-video-hero iframe {width: 300%;left: -100%}
+    }
+{%- endcapture -%}
+{%- style -%}
+    #shopify-section-{{ section.id }} .otsb__root .video-with-text-wrapper {
+        {%- if section.settings.color_overlay.alpha != 0.0 -%}
+            --image-treatment-overlay: {{ section.settings.color_overlay.red }}, {{ section.settings.color_overlay.green }}, {{ section.settings.color_overlay.blue }};
+        {%- endif -%}
+        {%- if section.settings.custom_height_mobile -%}
+            padding-bottom: {{ section.settings.mobile_height }}px !important;
+        {%-endif-%}
+    }
+    #shopify-section-{{ section.id }} .otsb__root .video-with-text-wrapper div.otsb-image-treatment-overlay:empty {
+        display: block;
+        {%- if section.settings.color_overlay.alpha == 0.0 -%}
+            background: #000000;
+        {%- endif -%}
+    }
+    #shopify-section-{{ section.id }} .otsb__root .otsb-video-hero video {object-fit: cover}
+    {%- if section.settings.custom_height_mobile or section.settings.custom_height_desk -%}
+        {{- fake_object_fit_cover -}}
+    {%- endif -%}
+    {%- assign desk_height = '56.25%' -%}
+    {%- if section.settings.custom_height_desk == true -%}
+        {%- assign desk_height = section.settings.desk_height | append: 'px' -%}
+    {%- endif -%}
+    #shopify-section-{{ section.id }} .__heading {
+        --h1-font-size: {{ font_size_heading }}rem;
+        --h2-font-size: {{ font_size_heading }}rem;
+        --h3-font-size: {{ font_size_heading }}rem;
+        --h4-font-size: {{ font_size_heading }}rem;
+        --h5-font-size: {{ font_size_heading }}rem;
+        --h6-font-size: {{ font_size_heading }}rem;
+        font-size: {{ font_size_heading | times: 0.5 }}rem;
+    {%- if section.settings.colors_text_link.alpha != 0.0 -%}
+        --colors-text-link: {{ section.settings.colors_text_link.red }}, {{ section.settings.colors_text_link.green }}, {{ section.settings.colors_text_link.blue }};
+    {%- endif -%}
+    {%- if section.settings.color_heading.alpha != 0.0 -%}
+        --colors-heading: {{ section.settings.color_heading.red }}, {{ section.settings.color_heading.green }}, {{ section.settings.color_heading.blue }}
+    {%- endif -%}
+    }
+    #shopify-section-{{ section.id }} .otsb__root .otsb-rte a {
+    {% if section.settings.colors_text_link.alpha != 0.0 %}
+        --colors-text-link: {{ section.settings.colors_text_link.red }}, {{ section.settings.colors_text_link.green }}, {{ section.settings.colors_text_link.blue }};
+    {% endif %}
+    }
+    #shopify-section-{{ section.id }} .video-with-text-content > div {
+        --image-treatment-overlay: var(--shopify-editor-setting-colors_image_treatment_overlay-format-red), var(--shopify-editor-setting-colors_image_treatment_overlay-format-green), var(--shopify-editor-setting-colors_image_treatment_overlay-format-blue);
+    }
+    #shopify-section-{{ section.id }} .otsb-button.otsb-button-outline {
+        background: rgba(var(--background-secondary-button),.7);
+    }
+    #shopify-section-{{ section.id }} .__contenttext {
+        --h1-font-size: calc(var(--font-heading-scale) * 4rem * {{ size_text_h }});
+        --h2-font-size: calc(var(--font-heading-scale) * 2.4rem * {{ size_text_h }});
+        --h3-font-size: calc(var(--font-heading-scale) * 1.8rem * {{ size_text_h }});
+        --h4-font-size: calc(var(--font-heading-scale) * 1.5rem * {{ size_text_h }});
+        --h5-font-size: calc(var(--font-heading-scale) * 1.3rem * {{ size_text_h }});
+        --h6-font-size: calc(var(--font-heading-scale) * 1.1rem * {{ size_text_h }});
+        --h1-font-size-mobile: calc(var(--font-heading-scale) * 3rem * {{ size_text_h }});
+        --h2-font-size-mobile: calc(var(--font-heading-scale) * 2rem * {{ size_text_h }});
+        --h3-font-size-mobile: calc(var(--font-heading-scale) * 1.7rem * {{ size_text_h }});
+        --h4-font-size-mobile: calc(var(--font-heading-scale) * 1.5rem * {{ size_text_h }});
+        --h5-font-size-mobile: calc(var(--font-heading-scale) * 1.2rem * {{ size_text_h }});
+        --h6-font-size-mobile: calc(var(--font-heading-scale) * 1.1rem * {{ size_text_h }});
+        font-size: {{ size_text | times: 0.9 }}rem;
+        {%- if section.settings.color_text.alpha != 0.0 -%}
+            color: rgba({{ section.settings.color_text.red }}, {{ section.settings.color_text.green }}, {{ section.settings.color_text.blue }});
+        {%- endif -%}
+    }
+    {%- if section.settings.color_sub_heading.alpha != 0.0 -%}
+        #shopify-section-{{section.id}} .__subheading {
+            color: rgba({{ section.settings.color_sub_heading.red }}, {{ section.settings.color_sub_heading.green }}, {{ section.settings.color_sub_heading.blue }})
+        }
+    {%- endif -%}
+    #shopify-section-{{ section.id }} .bg-gradient-radial {background-image: radial-gradient(rgba(33,32,32,0.2) 0%, transparent 75%)}
+    #shopify-section-{{section.id}} .otsb-button-icon svg{width:100% !important;height:100% !important}
+    /* #shopify-section-{{section.id}} .otsb-btn__sliced:not(.otsb-btn__solid) .otsb-button-text {transform:none} */
+    @media (min-width: {{ screen_md }}px) {
+        #shopify-section-{{ section.id }} .__contenttext {font-size: {{ size_text }}rem}
+        #shopify-section-{{ section.id }} .otsb__root .video-with-text-wrapper {padding-bottom: {{ desk_height }} !important}
+    }
+    {%- if section.settings.content_position == "custom" -%}
+    @media screen and (min-width: {{ screen_lg }}px) {
+        #shopify-section-{{ section.id }} .video-with-text-content > div {
+            left:{{ section.settings.content_horizontal }}%;
+            top:{{ section.settings.content_vertical }}%;
+            transform: translate(-{{ section.settings.content_horizontal }}%,-{{ section.settings.content_vertical }}%);
+        }
+    }
+    {%- endif -%}
+
+
+
+
+
+    {%- assign color_marker = section.settings.color_marker | default: '#E1A832' -%}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-circle_sketch:before,
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-circle_sketch:after {
+  content:"";
+  z-index:-1;
+  left:0;
+  border-width:2px;
+  border-style:solid;
+  border-color:{{color_marker}};
+  position:absolute;
+  width:100%;
+  height:1em;
+  opacity:0.7;
+  border-radius:50%;
+  padding:0.1em 0.25em;
+}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-circle_sketch:before {
+  top:0.2em;
+  border-right-color:transparent;
+  transform:rotate(2deg);
+}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-circle_sketch:after {
+  top:0.3em;
+  border-left-color:transparent;
+  border-top-color:transparent;
+  transform:rotate(-1deg);
+}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-sketch:before,
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-sketch:after{
+  content:"";
+  z-index:-1;
+  top:0.2em;
+  border-width:2px;
+  border-style:solid;
+  border-color:{{color_marker}};
+  position:absolute;
+  width:0;
+  height:1em;
+  opacity:0.5;
+  border-radius:0.25em;
+  clip-path: inset(0 100% 0 0); /* Ẩn toàn bộ */
+  transition: clip-path 0.5s ease-in-out;
+}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-sketch:after{
+  left:0em;
+  border-left-color:transparent;
+  border-top-color:transparent;
+  width:100%;
+  transform:rotate(-1deg);
+  transition-delay:0.5s;
+}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-sketch:before {
+  left:-0.1em;
+  border-right-color:transparent;
+  width:105%;
+  transform:rotate(2deg);
+}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-sketch.__highlight-active:after,
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-sketch.__highlight-active:before {clip-path: inset(0 0 0 0)}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-strong_underline:before {
+  background-color: {{color_marker}};
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 55%;
+  left: -2px;
+  bottom: 0;
+  z-index: -1;
+  transform: rotate(-3deg);
+  transition: width 0.3s cubic-bezier(0.06, 0.14, 0.8, 0.91);
+}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-strong_underline.__highlight-active:before {width: calc(100% + 4px)}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-realistic:before{
+  content:"";
+  background-color:{{color_marker}};
+  width:0;
+  height:0.85em;
+  position:absolute;
+  z-index:-1;
+  filter:url(#marker-shape);
+  left:-3%;
+  top:0.3em;
+  padding:0 0.25em;
+  transition: width 0.15s cubic-bezier(0.06, 0.14, 0.8, 0.91);
+  transform: rotate(-2deg);
+}
+#shopify-section-{{ section.id }} .__heading .otsb-txt-highlight-realistic.__highlight-active:before{width:107%}
+#shopify-section-{{ section.id }} .svg-underline path {
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  transition: stroke-dashoffset 1.5s ease-in-out;
+}
+#shopify-section-{{ section.id }} .highlight-anm-start .svg-underline path,
+#shopify-section-{{ section.id }} .highlight-anm-start .svg-circle path {
+  stroke-dashoffset: 0;
+}
+#shopify-section-{{ section.id }} .highlight-anm-start.hl-underline {
+  --color-highlight: {{color_marker}};
+  color: var(--color-highlight);
+  transition: color 0.3s cubic-bezier(0.06, 0.14, 0.8, 0.91) 0.4s;
+}
+{%- if section.settings.highlight_type == 'font_highlight' -%}
+#shopify-section-{{ section.id }} .otsb-txt-highlight-font_highlight {color:{{color_marker}}}
+{%-endif-%}
+
+{%- endstyle -%}
+{% comment %}template app-embed-warning.liquid{% endcomment %}
+{% if request.design_mode %}
+  <style>
+    .otsb_nope {
+      display: none !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      opacity: 0 !important;
+    }
+    ._otsb_warning {
+      position: relative;
+      box-shadow: 0rem 0.1875rem 0.0625rem -0.0625rem rgba(26, 26, 26, 0.07);
+      border-radius: 1rem;
+    }
+    ._otsb_warning::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      box-shadow: 0.0625rem 0rem 0rem 0rem rgba(0, 0, 0, 0.13) inset,
+      -0.0625rem 0rem 0rem 0rem rgba(0, 0, 0, 0.13) inset, 0rem -0.0625rem 0rem 0rem rgba(0, 0, 0, 0.17) inset,
+      0rem 0.0625rem 0rem 0rem rgba(204, 204, 204, 0.5) inset;
+      border-radius: 1rem;
+      pointer-events: none;
+      mix-blend-mode: luminosity;
+    }
+  </style>
+  <div x-data="otsb_script_require" class="page-width" style="margin-top:36px;margin-bottom:36px">
+    <div class="_otsb_warning">
+      <div style="border-top-left-radius:1rem;border-top-right-radius:1rem;border:1px solid #fcaf0a;background:#fcb827;padding:1rem">
+        <div style="align-items:center;gap:8px;display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:space-between">
+          <div style="display:flex;gap:4px;flex-direction:row;flex-wrap:nowrap;justify-content:space-between">
+            <span style="display:block;height:20px;width:20px;max-height:100%;max-width:100%;margin:auto">
+              <svg viewBox="0 0 20 20" class="Polaris-Icon__Svg" focusable="false" aria-hidden="true">
+                <path d="M10 6.75a.75.75 0 0 1 .75.75v3.5a.75.75 0 1 1-1.5 0v-3.5a.75.75 0 0 1 .75-.75Z"></path><path d="M11 13.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path><path fill-rule="evenodd" d="M10 3.5c-1.045 0-1.784.702-2.152 1.447a449.26 449.26 0 0 1-2.005 3.847l-.028.052a403.426 403.426 0 0 0-2.008 3.856c-.372.752-.478 1.75.093 2.614.57.863 1.542 1.184 2.464 1.184h7.272c.922 0 1.895-.32 2.464-1.184.57-.864.465-1.862.093-2.614-.21-.424-1.113-2.147-2.004-3.847l-.032-.061a429.497 429.497 0 0 1-2.005-3.847c-.368-.745-1.107-1.447-2.152-1.447Zm-.808 2.112c.404-.816 1.212-.816 1.616 0 .202.409 1.112 2.145 2.022 3.88a418.904 418.904 0 0 1 2.018 3.875c.404.817 0 1.633-1.212 1.633h-7.272c-1.212 0-1.617-.816-1.212-1.633.202-.408 1.113-2.147 2.023-3.883a421.932 421.932 0 0 0 2.017-3.872Z"></path>
+              </svg>
+            </span>
+            <h2 style="overflow-wrap:anywhere;word-break:normal;font-size:100%;font-weight:650;line-height:1.25;color:rgb(37,26,0)">
+              App Embeds Are Disabled
+            </h2>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1rem;color:rgb(37,26,0)">
+        <p>
+          To use this section, the app embeds of OT: Theme Sections must be enabled in the theme editor. Please follow
+          these steps to activate them:
+        </p>
+        <ul>
+          <li>In the left panel, click the last icon that says <b>“App embeds”</b>.</li>
+          <li>Enter <b>“OT”</b> on the search bar to quickly find and embed the apps from OT: Theme Sections.</li>
+          <li>
+            Turn on the Toggle buttons of "Section Builder Script" and "Section Builder Style", then click <b>Save</b>.
+          </li>
+        </ul>
+        <p>
+          Please refer to the User Guide
+          <a
+            href="https://support.omnithemes.com/blogs/ot-theme-sections-get-started/1-embed-app-to-shopify-theme"
+            target="_blank"
+          >here</a
+          >
+        </p>
+        <p>
+          For further support: feel free to contact us at
+          <a href="mailto:support@omnithemes.com">support@omnithemes.com</a>!
+        </p>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% comment %}endtemplate{% endcomment %}
+<div class="otsb__root otsb_nope" x-data="otsb_script_1">
+    <div class="pt-[{{ section.settings.top_padding_mobile }}px] md:pt-[{{ section.settings.top_padding }}px] pb-[{{ section.settings.bottom_padding_mobile }}px] md:pb-[{{ section.settings.bottom_padding }}px]{% if section.settings.full_width_mobile %} pl-0 pr-0{% else %} pl-5 pr-5{% endif %}{% if section.settings.full_width %} md:pr-0 md:pl-0{% else %} page-width md:pl-5 md:pr-5{% endif %}">
+        <div class="z-0 video-with-text-wrapper relative overflow-hidden w-full h-0 pb-[56.25%]{% if section.settings.rounded_corners %} md:rounded-lg{% else %} md:rounded-none{% endif %}{% if section.settings.rounded_corners_mobile %} rounded-lg{% endif %}"
+            {% if check_video %}
+                x-data
+                x-intersect:leave="$store.xVideo.pause($el)"
+                x-intersect="$store.xVideo.play($el)"
+            {% endif %}
+            {% if section.settings.video != blank %}
+                style="padding-bottom: {{ 1 | divided_by: section.settings.video.aspect_ratio | times: 100 }}%;"
+            {% endif %}
+        >
+            <div class="z-20 absolute top-0 left-0 bottom-0 right-0 otsb-image-treatment-overlay pointer-events-none opacity-{{ section.settings.overlay_opacity }} max-w-full max-h-full"></div>
+            {%- if section.settings.sub_heading_video != blank or section.settings.heading != blank or section.settings.text != blank or section.blocks.size != 0 -%}
+            <div class="video-with-text-content{% if section.settings.content_position != "custom" %} page-width ml-5 mr-5 lg:mx-auto absolute top-0 left-0 bottom-0 right-0{% else %} w-full h-full{% endif %} z-20">
+                <div class="w-full absolute top-1/2 -translate-y-1/2 lg:max-w-1/2 {% if section.settings.content_position != "custom" %} lg:promotion-alignment--{{ section.settings.content_position }}{% else %} p-5 z-20{% endif %} text-{{ section.settings.content_alignment }} left-0 right-0" style="max-height:100%;overflow-y:auto;overflow-x:hidden;padding:2rem 0">
+                    <div class="relative{% if section.settings.content_alignment == "center" %} bg-gradient-radial{% endif %} empty:hidden inline-block w-full max-h-full pt-2 pb-2">
+                        {%- if section.settings.sub_heading_video != blank -%}
+                            <p class="__subheading h3 leading-tight overflow-hidden p-break-words pt-2 pb-1 md:pb-2 md:font-medium">
+                                {{ section.settings.sub_heading_video }}
+                            </p>
+                        {%- endif -%}
+                        {%- if section.settings.heading != blank -%}
+                        <{{ section.settings.heading_tag }} class="__heading leading-tight h2 block p-break-words">
+                            {%- if section.settings.heading contains '[[' and section.settings.heading contains ']]' -%}
+                                {%- if section.settings.highlight_type == 'underline_1' -%}
+                                    {%-capture unerline_1_content-%}
+                                    <svg class="svg-highlight svg-underline absolute left-0 top-auto w-full -bottom-[10%]" width="216" height="9" viewBox="0 0 216 9" fill="none" xmlns="http://www.w3.org/2000/svg" style="fill: none;" preserveAspectRatio="none">
+                                        <path d="M1.04342 7.65772C40.5413 4.02679 138.633 -1.71967 215.018 4.3419" vector-effect="non-scaling-stroke" stroke="var(--color-highlight);" stroke-width="2.5" style="stroke: var(--color-highlight);"></path>
+                                    </svg>
+                                    {%-endcapture-%}
+                                    {%-assign heading_content = section.settings.heading | replace: '[[', '<span class="highlight relative inline-block hl-underline mb-2.5" x-data="{ isIntersecting: false }" x-intersect.once.margin.-25%.0px.-25%.0px="isIntersecting = true" :class="isIntersecting && `highlight-anm-start`">' | replace: ']]', unerline_1_content | append: '</span>' -%}
+                                    {{- heading_content -}}
+                                {%- elsif section.settings.highlight_type == 'strong_underline' or section.settings.highlight_type == 'sketch' or section.settings.highlight_type == 'circle_sketch' or section.settings.highlight_type == 'realistic' or section.settings.highlight_type == 'font_highlight' -%}
+                                    {%- capture open_marker_tag -%}<span class="otsb-txt-highlight-{{ section.settings.highlight_type }} relative inline-flex" x-data="{isIntersecting: false}" x-intersect.once.margin.-25%.0px.-25%.0px="isIntersecting = true" :class="isIntersecting && `__highlight-active`">{%-endcapture-%}
+                                    {%- assign heading_content = section.settings.heading | replace: '[[', open_marker_tag | replace: ']]', '</span>' -%}
+                                    {{- heading_content -}}
+                                    {%- if section.settings.highlight_type == 'realistic' -%}
+                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="svg-filters" style="display:none;">
+                                        <defs>
+                                            <filter id="marker-shape">
+                                                <feTurbulence type="fractalNoise" baseFrequency="0 0.15" numOctaves="1" result="warp" />
+                                                <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="30" in="SourceGraphic" in2="warp" />
+                                            </filter>
+                                        </defs>
+                                    </svg>
+                                    {%- endif -%}
+                                {%-endif-%}
+                            {%- else -%}
+                                {{- section.settings.heading -}}
+                            {%-endif-%}
+                        </{{ section.settings.heading_tag }}>
+                    {%- endif -%}
+                    {% if section.settings.text != blank %}
+                        <div class="__contenttext otsb-rte mt-2 lg:mt-4">
+                            {{ section.settings.text }}
+                        </div>
+                    {% endif %}
+                    {%- for block in section.blocks -%}
+                        {% case block.type %}
+                            {%- when 'button' -%}
+                                {% if block.settings.button_label != blank %}
+                                    <div class="x-button-{{ block.id }} button-{{ block.id }} flex justify-{{ section.settings.content_alignment }} mt-4 mb-9 md:mt-8 md:mb-4"{{ block.shopify_attributes }}>
+                                        {%-style-%}
+                                        {%-if block.settings.show_button_as == 'secondary'-%}
+                                            #shopify-section-{{section.id}} .otsb-button.otsb-button-outline {
+                                                {%- if block.settings.secondary_button_light.alpha != 0.0 -%}
+                                                --background-secondary-button: {{ block.settings.secondary_button_light.red }}, {{ block.settings.secondary_button_light.green }}, {{ block.settings.secondary_button_light.blue }};
+                                                --colors-line-secondary-button: var(--background-secondary-button);
+                                                {%-endif-%}
+                                                --colors-secondary-button: {{ block.settings.secondary_button_text_light.red }}, {{ block.settings.secondary_button_text_light.green }}, {{ block.settings.secondary_button_text_light.blue }};
+                                            }
+                                        {%-endif-%}
+                                        #shopify-section-{{ section.id }} .otsb-btn.otsb-button {
+                                            --color-button-mobile: {%-if block.settings.button_color_mobile == 'hover' -%}var(--colors-button-hover){%- else -%}var(--color-button){%- endif -%};
+                                            --color-button-text-mobile: {%-if block.settings.button_color_mobile == 'hover' -%}rgb(var(--colors-button-text-hover)){%- else -%}rgb(var(--color-button-text)){%- endif -%};
+                                            {%- if block.settings.button_light.alpha != 0 -%}
+                                                --color-button: {{ block.settings.button_light.red }}, {{ block.settings.button_light.green }}, {{ block.settings.button_light.blue }};
+                                            {%- endif -%}
+                                            {% if block.settings.button_text_light.alpha != 0 %}
+                                                --color-button-text: {{ block.settings.button_text_light.red }}, {{ block.settings.button_text_light.green }}, {{ block.settings.button_text_light.blue }};
+                                            {% endif %}
+                                            {% if block.settings.button_hover_light.alpha != 0 %}
+                                                --colors-button-hover: {{ block.settings.button_hover_light.red }}, {{ block.settings.button_hover_light.green }}, {{ block.settings.button_hover_light.blue }};
+                                            {% else %}
+                                                --colors-button-hover: var(--color-button);
+                                            {% endif %}
+                                            {% if block.settings.button_text_hover_light.alpha != 0 %}
+                                                --colors-button-text-hover: {{ block.settings.button_text_hover_light.red }}, {{ block.settings.button_text_hover_light.green }}, {{ block.settings.button_text_hover_light.blue }};
+                                            {% else %}
+                                                --colors-button-text-hover: var(--color-button-text);
+                                            {% endif %}
+                                            {%- if block.settings.show_button_as == 'text-link' -%}
+                                                --colors-text-link: var(--color-button);
+                                            {%-endif-%}
+                                        }
+                                        {%-endstyle-%}
+                                        {%-liquid
+                                            assign btn_classes = 'inline-flex otsb-button otsb-btn leading-normal empty:hidden text-center pl-7 pr-7 pt-2.5 pb-2.5 md:pl-8 md:pr-8 md:pt-3 md:pb-3'
+                                            if block.settings.show_button_as == 'primary'
+                                                assign btn_classes = btn_classes | append: ' otsb-btn__solid'
+                                                assign btn_classes = btn_classes | append: ' otsb-btn__' | append: block.settings.button_animation
+                                            elsif block.settings.show_button_as == 'secondary'
+                                                assign btn_classes = btn_classes | append: ' otsb-button-outline'
+                                            else
+                                                assign btn_classes = btn_classes | append: ' otsb-btn__text-link'
+                                            endif
+                                            assign btn_classes = btn_classes | append: ' otsb-btn-' | append: block.settings.button_type
+                                            if block.settings.button_link == blank
+                                                assign btn_classes = btn_classes | append: ' cursor-not-allowed'
+                                            endif
+                                        -%}
+                                        <a class="{{btn_classes}}"
+                                            {%- if block.settings.button_link != blank %}
+                                                href="{{ block.settings.button_link }}"
+                                                {%- if block.settings.open_new_window == true %}
+                                                    target="_blank"
+                                                {%- endif -%}
+                                            {%- else %}
+                                                disabled="disabled"
+                                            {%- endif -%}
+                                        >
+                                            {% render 'otsb-button-label', button_animation: block.settings.button_animation, button_label: block.settings.button_label, show_button_style: block.settings.show_button_as, custom_icon_button: block.settings.custom_icon_button %}
+                                        </a>
+                                        {% comment %} {% if block.settings.button_link == blank %}
+                                            <p class="otsb-button{% if block.settings.button_primary %} otsb-button-solid{% else %} otsb-button-outline{% endif %} leading-normal empty:otsb-hidden text-center pl-7 pr-7 pt-2.5 pb-2.5 md:pl-8 md:pr-8 md:pt-3 md:pb-3 opacity-70 hover:cursor-not-allowed">
+                                                {% render 'otsb-button-label', button_animation: block.settings.button_animation, button_label: block.settings.button_label, show_button_primary: block.settings.button_primary, custom_icon_button: block.settings.custom_icon_button %}
+                                            </p>
+                                        {% else %}
+                                            <a class="otsb-button{% if block.settings.button_primary %} otsb-button-solid{% else %} otsb-button-outline{% endif %} leading-normal empty:otsb-hidden text-center pl-7 pr-7 pt-2.5 pb-2.5 md:pl-8 md:pr-8 md:pt-3 md:pb-3"
+                                               href="{{ block.settings.button_link }}"{% if block.settings.open_new_window %} target="_blank"{% endif %}>
+                                                {% render 'otsb-button-label', button_animation: block.settings.button_animation, button_label: block.settings.button_label, show_button_primary: block.settings.button_primary, custom_icon_button: block.settings.custom_icon_button %}
+                                            </a>
+                                        {% endif %} {% endcomment %}
+                                    </div>
+                                {% endif %}
+                        {% endcase %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="video-hero otsb-video-hero otsb-external-video">
+            {% unless check_video %}
+                <div class="w-full h-full flex justify-center items-center absolute bg-[#c9c9c9]">
+                    <span class="w-20 md:w-40 h-20 md:h-40 flex items-center">
+                        {% render 'otsb-icon-media', icon: 'icon-video', class: 'text-[#acacac] w-full h-full' %}
+                    </span>
+                </div>
+            {% endunless %}
+            {%- if video_type == 'youtube' or video_type == 'vimeo' -%}
+                <div class="w-full h-full absolute" x-data x-intersect="$store.xVideo.externalLoad($el, '{{ video_type }}', '{{ video_id }}', true, `{{ video_alt }}`, 0)"></div>
+            {%- endif -%}
+            {% if video_type == 'video_select' %}
+                    {{ section.settings.video
+                    | video_tag:
+                    image_size: "1100x",
+                    loop: true,
+                    controls: false,
+                    autoplay: true,
+                    muted: true,
+                    class: "w-full h-full absolute top-0 left-0 video otsb-video",
+                    alt: video_alt
+                    }}
+                    {%- if section.settings.video_sound_control -%}
+                <button x-data="{ muted: true }" class="button-sound-control bg-[rgba(var(--image-treatment-text),0.06)] hover:bg-[rgba(var(--image-treatment-text),0.1)] bg-opacity-30 rounded-[30px] flex items-center justify-center absolute right-2 rtl:left-2 rtl:right-auto cursor-pointer w-[35px] h-[35px] md:w-[34px] md:h-[34px]{% if section.settings.product_card_position == 'on' and section.settings.video_layout == 'aspect-[9/16]' %} top-2 {% else %} bottom-2 {% endif %}" @click.stop="$store.xVideo.toggleMute($el); muted=!muted" aria-label="button sound control">
+                    <span class="w-[18px] h-[18px] lg:w-[18px] lg:h-[18px] text-[rgba(var(--image-treatment-text))]" x-show="muted">
+                        {% render 'otsb-icon-media', icon: 'icon-unmute' %}
+                    </span>
+                        <span class="w-[18px] h-[18px] lg:w-[18px] lg:h-[18px] text-[rgba(var(--image-treatment-text))]" x-show="!muted" x-cloak>
+                        {% render 'otsb-icon-media', icon: 'icon-mute' %}
+                    </span>
+                </button>
+                {%-endif-%}
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>

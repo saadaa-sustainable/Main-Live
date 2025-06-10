@@ -1,0 +1,129 @@
+<div class="fixed_nav fixed_nav_mobile hidden-tablet-and-up">
+  <div class="row-nav">
+    <!-- Home -->
+    <div class="fixed-nav-item">
+      <div class="item--box">
+        <a class="fixed_nav--link {% if template contains 'index' %} active_url{% endif %}" href="/" data-attr-pointers_none="">
+          <img src="https://cdn.shopify.com/s/files/1/0450/3476/6485/files/Home.svg?v=1744124259" alt="Home">
+          <span class="icon_name"> Home </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Community -->
+    <div class="fixed-nav-item">
+      <div class="item--box mobile-custom-account-icon">
+        <a class="fixed_nav--link {% if request.path == '/pages/community' %} active_url{% endif %}" href="/pages/community">
+          <img src="https://cdn.shopify.com/s/files/1/0450/3476/6485/files/Icon.svg?v=1744124259" alt="Community">
+          <span class="icon_name"> Community </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Bundle Builder -->
+    <div class="fixed-nav-item">
+      <div class="item--box mobile-custom-account-icon">
+        <a class="fixed_nav--link {% if request.path == '/pages/bundle-builder' %} active_url{% endif %}" href="/pages/bundle-builder">
+          <img src="https://cdn.shopify.com/s/files/1/0450/3476/6485/files/icon_2.svg?v=1744124259" alt="Bundle Builder">
+          <span class="icon_name"> Bundle Builder </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Loyalty -->
+    <div class="fixed-nav-item">
+      <div class="item--box">
+        <a class="fixed_nav--link {% if request.path == '/pages/about-us' %} active_url{% endif %}" href="/pages/about-us">
+          <img src="https://cdn.shopify.com/s/files/1/0450/3476/6485/files/Heart.svg?v=1744124260" alt="Loyalty">
+          <span class="icon_name"> Loyalty </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .fixed_nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    right: 0;
+    min-height: 70px;
+    box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.09);
+    background-color: #F6F3F1;
+    padding: 6px 0;
+    text-align: center;
+    z-index: 9;
+  }
+  .row-nav {
+    margin: 0;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+  .fixed-nav-item {
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+  }
+  .item--box {
+    position: relative;
+  }
+  .fixed_nav--link {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-decoration: none;
+    position: relative;
+  }
+  .fixed_nav--link svg,
+  .fixed_nav--link img {
+    width: 28px !important;
+    height: 28px !important;
+    margin: 0 auto;
+  }
+  .fixed_nav--link .icon_name {
+    display: block;
+    font-size: 9px;
+    letter-spacing: -0.2px;
+    color: #000;
+    margin-top: 4px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .fixed_nav--link.active_url:after {
+    content: "";
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #000;
+    position: absolute;
+    bottom: -7px;
+  }
+  @media (min-width: 769px) {
+    .fixed_nav.fixed_nav_mobile.hidden-tablet-and-up {
+      display: none;
+    }
+  }
+
+  .fixed_nav--link.active_url img,
+  .fixed_nav--link.active_url svg {
+    filter: brightness(0) saturate(100%);
+  }
+</style>
+
+<script>
+  $(document).ready(function(){
+    $('body').on('click','#data-hamburger',function(){
+      setTimeout(function(){
+        $('.header-item--left .site-nav button').trigger('click');
+        setTimeout(function(){
+          $('button.collapsible-trigger.collapsible--auto-height.cstm_mobile_shop-women').trigger('click');
+          $('button.mobile-nav__link--button.collapsible-trigger.cstm_mobile_categories').trigger('click');
+        }, 500);
+      }, 100);
+    });
+  });
+</script>

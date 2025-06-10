@@ -1,0 +1,131 @@
+<style>
+
+      @media screen and (max-width: 999px){
+  .product-list--carousel-{{section.id}} {
+      --product-list-card-width: min(300px, 47%);
+      gap: 4%;
+  }
+      }
+      @media screen and (max-width: 999px){
+  .product-list:not(.product-list--carousel) {
+      margin-inline: 0;
+      display: grid;
+      grid-template-columns: repeat(2, .5fr);
+  }}
+</style>
+{% assign preorder_product = 'ecru-airy-linen-long-kurta-copy__navy-blue-airy-linen-long-kurta-copy-1__ecru-airy-linen-short-kurta-1__navy-blue-airy-linen-short-kurta-1__white-airy-linen-short-kurta-1__white-airy-linen-long-kurta-1' %}
+{% assign pre_p_url = preorder_product | split: '__' %}
+<div class="">
+  <div class="section-stack">
+    {%- assign wrapper_carousel_id = 'featured-collections-carousel-' | append: section.id -%}
+
+    <div class="v-stack justify-self-center gap-4 text-center sm:gap-5">
+      <carousel-navigation
+        align-selected
+        class="featured-collections-navigation scroll-area bleed"
+        aria-controls="{{ wrapper_carousel_id }}"
+      >
+        <button class="h4" aria-current="true">Similar style</button>
+        <button class="h4" aria-current="false">Pair it with</button>
+      </carousel-navigation>
+    </div>
+    <featured-collections-carousel id="{{ wrapper_carousel_id }}" class="featured-collections-carousel">
+      <div class="featured-collections-carousel__item is-selected" }>
+        {%- capture product_list -%}
+                {%- for product in collection1.products  -%}
+{% if pre_p_url contains product.handle %}
+  {% continue %}
+{% endif %}
+                  {%- render 'product-card', product: product, reveal: true, hide_product_information: false, -%}
+                {%- endfor -%}
+              {%- endcapture -%}
+        {%- assign product_carousel_id = 'featured-collections-product-list-carousel-'
+          | append: 'sndmfjwnbevfmnjwhvnncvjhwev'
+        -%}
+        {% if collection1.products.size > 0 %}
+          <product-list class="floating-controls-container floating-controls-container--inside floating-controls-container--on-hover">
+            <scroll-carousel
+              id="{{ product_carousel_id }}"
+              group-cells
+              allow-drag
+              class="product-list  product-list--carousel product-list--carousel-{{section.id}} scroll-area bleed md:unbleed"
+            >
+              {{- product_list -}}
+            </scroll-carousel>
+            <button
+              is="carousel-prev-button"
+              type="button"
+              class="prev-next-button prev-next-button--prev circle-button hover:animate-icon-inline"
+              aria-controls="{{ product_carousel_id }}"
+              disabled
+            >
+              <span class="sr-only">{{ 'general.accessibility.previous' | t }}</span>
+              {%- render 'icon' with 'arrow-left', direction_aware: true -%}
+            </button>
+
+            <button
+              is="carousel-next-button"
+              type="button"
+              class="prev-next-button prev-next-button--next circle-button hover:animate-icon-inline"
+              aria-controls="{{ product_carousel_id }}"
+            >
+              <span class="sr-only">{{ 'general.accessibility.next' | t }}</span>
+              {%- render 'icon' with 'arrow-right', direction_aware: true -%}
+            </button>
+          </product-list>
+        {% else %}
+          <h2 class="">NO PRODUCTS</h2>
+        {% endif %}
+      </div>
+
+      <div class="featured-collections-carousel__item ">
+        {%- capture product_list2 -%}
+                {%- assign should_reveal = false -%}
+                {%- for product in collection2 -%}
+                  {% if pre_p_url contains product.handle %}
+  {% continue %}
+{% endif %}
+                  {%- render 'product-card', product: product, reveal: should_reveal, hide_product_information: false, -%}
+                {%- endfor -%}
+              {%- endcapture -%}
+        {%- assign product_carousel_id = 'featured-collections-product-list-carousel-'
+          | append: 'smhdjshdsndmfjwnbevfmnjwhvnncvjhwev'
+        -%}
+        {% if collection2.size > 0 %}
+          <product-list class="floating-controls-container floating-controls-container--inside floating-controls-container--on-hover">
+            <scroll-carousel
+              id="{{ product_carousel_id }}"
+              group-cells
+              allow-drag
+              class="product-list  product-list--carousel product-list--carousel-{{section.id}} scroll-area bleed md:unbleed"
+            >
+              {{- product_list2 -}}
+            </scroll-carousel>
+            <button
+              is="carousel-prev-button"
+              type="button"
+              class="prev-next-button prev-next-button--prev circle-button hover:animate-icon-inline"
+              aria-controls="{{ product_carousel_id }}"
+              disabled
+            >
+              <span class="sr-only">{{ 'general.accessibility.previous' | t }}</span>
+              {%- render 'icon' with 'arrow-left', direction_aware: true -%}
+            </button>
+
+            <button
+              is="carousel-next-button"
+              type="button"
+              class="prev-next-button prev-next-button--next circle-button hover:animate-icon-inline"
+              aria-controls="{{ product_carousel_id }}"
+            >
+              <span class="sr-only">{{ 'general.accessibility.next' | t }}</span>
+              {%- render 'icon' with 'arrow-right', direction_aware: true -%}
+            </button>
+          </product-list>
+        {% else %}
+          <h2 class="">NO PRODUCTS</h2>
+        {% endif %}
+      </div>
+    </featured-collections-carousel>
+  </div>
+</div>

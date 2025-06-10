@@ -1,0 +1,643 @@
+{% liquid
+  assign setting_base_size = 120
+  if settings.heading_base_size != blank
+    assign heading_size = settings.heading_base_size | times: section.settings.heading_size | times: 0.000225
+  else
+    assign heading_size = section.settings.heading_size | times: 100 | times: 0.0004
+  endif
+  if settings.heading_scale
+    assign heading_size = heading_size | times: settings.heading_scale | times: 0.01 
+  endif
+  assign has_map = false
+%}
+
+{% liquid
+  assign btnType = ''
+  case section.settings.button_edges_type
+    when 'rounded_corners'
+      assign btnType = 'otsb-btn-rounded-corners'
+    when 'rounded'
+      assign btnType = 'otsb-btn-rounded'
+    when 'mixed'
+      assign btnType = 'otsb-btn-mixed'
+    else
+      assign btnType = ''
+  endcase
+%}
+{% liquid
+  assign btnAnimation = ''
+  case section.settings.button_animation
+    when 'slide'
+      assign btnAnimation = 'otsb-btn__slide'
+    when 'fill_up'
+      assign btnAnimation = 'otsb-btn__fill_up'
+    when 'underline'
+      assign btnAnimation = 'otsb-btn__underline'
+    when 'sliced'
+      assign btnAnimation = 'otsb-btn__sliced'
+    else
+      assign btnAnimation = ''
+  endcase
+%}
+{%- style -%}
+#shopify-section-{{ section.id }} {
+  --h1-font-size: calc(var(--font-heading-scale) * 4rem);
+  --h2-font-size: calc(var(--font-heading-scale) * 2.4rem);
+  --h3-font-size: calc(var(--font-heading-scale) * 1.8rem);
+  --h4-font-size: calc(var(--font-heading-scale) * 1.5rem);
+  --h5-font-size: calc(var(--font-heading-scale) * 1.3rem);
+  --h6-font-size: calc(var(--font-heading-scale) * 1.1rem);
+
+  --h1-font-size-mobile: calc(var(--font-heading-scale) * 3rem);
+  --h2-font-size-mobile: calc(var(--font-heading-scale) * 2rem);
+  --h3-font-size-mobile: calc(var(--font-heading-scale) * 1.7rem);
+  --h4-font-size-mobile: calc(var(--font-heading-scale) * 1.5rem);
+  --h5-font-size-mobile: calc(var(--font-heading-scale) * 1.2rem);
+  --h6-font-size-mobile: calc(var(--font-heading-scale) * 1.1rem);
+}
+  .otsb__root .event-calendar-popup {
+    --background-color: var(--color-background, 255, 255, 255);
+  }
+  .button--{{ section.id }}.otsb-button.otsb-btn__solid {
+    {% if section.settings.button_color_mobile == 'color' %}
+      --color-button-mobile: var(--color-button, 18, 18, 18);
+      --color-button-text-mobile: rgb(var(--color-button-text, #fff));
+    {% else %}
+      --color-button-mobile: var(--colors-button-hover, #fff);
+      --color-button-text-mobile: rgba(var(--colors-button-text-hover, 18, 18, 18, 1));
+    {% endif %}
+  }
+  .otsb__root .heading--{{ section.id }} {
+    font-size: {{ heading_size | times: 0.6 }}rem;
+  }
+  {%- comment -%}
+  section#shopify-section-{{ section.id }} .otsb-button.otsb-button-outline {
+    --colors-line-secondary-button: var(--color-secondary-button-text, 18, 18, 18);
+    --background-secondary-button: transparent;
+    --colors-secondary-button: var(--color-secondary-button-text, 18, 18, 18);
+  }
+  {%- endcomment -%}
+  @media (min-width: 767px) {
+    .otsb__root .heading--{{ section.id }} {
+      font-size: {{ heading_size }}rem;
+    }
+  }
+  .otsb__root .button--{{ section.id }},
+  .otsb__root .button--{{ section.id }}:before,
+  .otsb__root .button--{{ section.id }}.otsb-button.otsb-button-outline {
+  {%- unless section.settings.color_button.alpha == 0.0 -%}
+    --color-button: {{ section.settings.color_button.red }}, {{ section.settings.color_button.green }}, {{ section.settings.color_button.blue }};
+  {%- endunless -%}
+  {%- unless section.settings.color_text_button.alpha == 0.0 -%}
+    --color-button-text: {{ section.settings.color_text_button.red }}, {{ section.settings.color_text_button.green }}, {{ section.settings.color_text_button.blue }};
+  {%- endunless -%}
+  {%- unless section.settings.color_button_hover.alpha == 0.0 -%}
+    --colors-button-hover: {{ section.settings.color_button_hover.red }}, {{ section.settings.color_button_hover.green }}, {{ section.settings.color_button_hover.blue }};
+  {% else %}
+    --colors-button-hover: 56,56,56;
+  {%- endunless -%}
+  {%- unless section.settings.color_text_button_hover.alpha == 0.0 -%}
+    --colors-button-text-hover: {{ section.settings.color_text_button_hover.red }}, {{ section.settings.color_text_button_hover.green }}, {{ section.settings.color_text_button_hover.blue }};
+  {% else %}
+    --colors-button-text-hover: 255,255,255;
+  {%- endunless -%}
+  {% if section.settings.secondary_button_text_light.alpha != 0.0 %}
+    --colors-secondary-button: {{ section.settings.secondary_button_text_light.red }}, {{ section.settings.secondary_button_text_light.green }}, {{ section.settings.secondary_button_text_light.blue }};
+    --colors-line-secondary-button: {{ section.settings.secondary_button_text_light.red }}, {{ section.settings.secondary_button_text_light.green }}, {{ section.settings.secondary_button_text_light.blue }};
+    --background-secondary-button: transparent;
+  {% endif %}
+  {% if section.settings.secondary_button.alpha != 0.0 %}
+    --background-secondary-button: {{ section.settings.secondary_button.red }}, {{ section.settings.secondary_button.green }}, {{ section.settings.secondary_button.blue }};
+    --colors-line-secondary-button: {{ section.settings.secondary_button.red }}, {{ section.settings.secondary_button.green }}, {{ section.settings.secondary_button.blue }};
+  {% endif %}
+  }
+  .otsb__root .event-day-{{ section.id }} {
+  {% if section.settings.date_background_color.alpha != 0 %}
+    --date-color-background: {{ section.settings.date_background_color.red }}, {{ section.settings.date_background_color.green }}, {{ section.settings.date_background_color.blue }}, {{ section.settings.date_background_color.alpha }};
+  {% endif %}
+  {% if section.settings.date_color.alpha != 0 %}
+    color: {{ section.settings.date_color }};
+    --colors-text: {{ section.settings.date_color.red }}, {{ section.settings.date_color.green }}, {{ section.settings.date_color.blue }};
+    --colors-heading: {{ section.settings.date_color.red }}, {{ section.settings.date_color.green }}, {{ section.settings.date_color.blue }};
+    --color-foreground: {{ section.settings.date_color.red }}, {{ section.settings.date_color.green }}, {{ section.settings.date_color.blue }};
+  {% endif %}
+  }
+  .otsb__root .event-{{ section.id }} {
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    @media (min-width: 768px) {
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+      padding-top: {{ section.settings.padding_top }}px;
+    }
+  }
+  section#shopify-section-{{ section.id }} .otsb-{{ section.id }} .otsb-image-hover {
+    {% if section.settings.disable_zoom == true %}
+      --otsb-image-zoom: 1;
+    {% endif %}
+  }
+  section#shopify-section-{{ section.id }} .otsb-{{ section.id }} {
+    {% if section.settings.line_n_border_color.alpha != 0.0 %}
+      --colors-line-and-border: {{ section.settings.line_n_border_color.red }}, {{ section.settings.line_n_border_color.green }}, {{ section.settings.line_n_border_color.blue }};
+    {% else %}
+      --colors-line-and-border: 242, 242, 242;
+    {% endif %}
+    {% if section.settings.text_color.alpha != 0 %}
+      --color-foreground: {{ section.settings.text_color.red }}, {{ section.settings.text_color.green }}, {{ section.settings.text_color.blue }};
+      color: {{ section.settings.text_color }};
+    {% endif %}
+  }
+  section#shopify-section-{{ section.id }} .otsb-{{ section.id }} {
+    {% if section.settings.heading_color.alpha != 0 %}
+      --colors-heading: {{ section.settings.heading_color.red }}, {{ section.settings.heading_color.green }}, {{ section.settings.heading_color.blue }}, {{ section.settings.heading_color.alpha }};
+    {% else %}
+      --colors-heading: var(--color-foreground), 1;
+    {% endif %}
+  }
+  section#shopify-section-{{ section.id }} .otsb-{{ section.id }} .otsb-title.otsb-hover-text-link:hover {
+    {% if section.settings.text_link_color.alpha != 0 %}
+      --colors-heading: {{ section.settings.text_link_color.red }}, {{ section.settings.text_link_color.green }}, {{ section.settings.text_link_color.blue }}, {{ section.settings.text_link_color.alpha }};
+    {% else %}
+      --colors-heading: var(--color-link), 1;
+    {% endif %}
+  }
+  section#shopify-section-{{ section.id }} .otsb-{{ section.id }} .otsb-hover-text-link:not(.otsb-title),
+  section#shopify-section-{{ section.id }} .otsb-{{ section.id }} .otsb-rte a {
+    {% if section.settings.text_link_color.alpha != 0 %}
+      --colors-text-link: {{ section.settings.text_link_color.red }}, {{ section.settings.text_link_color.green }}, {{ section.settings.text_link_color.blue }};
+    {% else %}
+      --colors-text-link: var(--color-link);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .atcb-list {
+    {% if section.settings.dropdown_bg_color.alpha != 0 %}
+      --color-background: {{ section.settings.dropdown_bg_color.red }}, {{ section.settings.dropdown_bg_color.green }}, {{ section.settings.dropdown_bg_color.blue }}, {{ section.settings.dropdown_bg_color.alpha }};
+    {% else %}
+      --color-background: transparent;
+    {% endif %}
+  }
+{%- endstyle -%}
+
+{% if request.design_mode %}
+  <style>
+    .otsb_nope {
+      display: none !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      opacity: 0 !important;
+    }
+    ._otsb_warning {
+      position: relative;
+      box-shadow: 0rem 0.1875rem 0.0625rem -0.0625rem rgba(26, 26, 26, 0.07);
+      border-radius: 1rem;
+    }
+    ._otsb_warning::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      box-shadow: 0.0625rem 0rem 0rem 0rem rgba(0, 0, 0, 0.13) inset, -0.0625rem 0rem 0rem 0rem rgba(0, 0, 0, 0.13) inset, 0rem -0.0625rem 0rem 0rem rgba(0, 0, 0, 0.17) inset, 0rem 0.0625rem 0rem 0rem rgba(204, 204, 204, 0.5) inset;
+      border-radius: 1rem;
+      pointer-events: none;
+      mix-blend-mode: luminosity;
+    }
+    .otsb_warning_root {
+      margin-top:36px;
+      margin-bottom:36px;
+    }
+    .otsb_warning_root ._otsb_warning_1 {border-top-left-radius:1rem;border-top-right-radius:1rem;border:1px solid #fcaf0a;background:#fcb827;padding:1rem}
+    .otsb_warning_root ._otsb_warning_2 {align-items:center;gap:8px;display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:space-between}
+    .otsb_warning_root ._otsb_warning_3 {display:flex;gap:4px;flex-direction:row;flex-wrap:nowrap;justify-content:space-between}
+    .otsb_warning_root ._otsb_warning ._otsb_warning__icon {display:block;height:20px;width:20px;max-height:100%;max-width:100%;margin:auto}
+    .otsb_warning_root h2 {overflow-wrap:anywhere;word-break:normal;font-size:100%;font-weight:650;line-height:1.25;color:rgb(37,26,0)}
+    .otsb_warning_root * {
+      margin: 0;
+      padding: 0;
+      line-height: 1.375;
+    }
+    .otsb_warning_root ul {
+      list-style-type: disc;
+    }
+    .otsb_warning_root a {
+      color: rgb(0, 0, 238);
+      text-decoration: underline;
+    }
+    .otsb_warning_root .otsb_warning_message_container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding:1rem;
+      color:rgb(37,26,0);
+    }
+    .otsb_warning_root .otsb_warning_message_container ul {
+      padding-inline-start:3rem;
+    }
+  </style>
+  <div x-data="otsb_script_require" class="page-width otsb_warning_root">
+    <div class="_otsb_warning">
+      <div class="_otsb_warning_1">
+        <div class="_otsb_warning_2">
+          <div class="_otsb_warning_3">
+            <span class="_otsb_warning__icon">
+              <svg viewBox="0 0 20 20" class="Polaris-Icon__Svg" focusable="false" aria-hidden="true">
+                <path d="M10 6.75a.75.75 0 0 1 .75.75v3.5a.75.75 0 1 1-1.5 0v-3.5a.75.75 0 0 1 .75-.75Z"></path><path d="M11 13.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path><path fill-rule="evenodd" d="M10 3.5c-1.045 0-1.784.702-2.152 1.447a449.26 449.26 0 0 1-2.005 3.847l-.028.052a403.426 403.426 0 0 0-2.008 3.856c-.372.752-.478 1.75.093 2.614.57.863 1.542 1.184 2.464 1.184h7.272c.922 0 1.895-.32 2.464-1.184.57-.864.465-1.862.093-2.614-.21-.424-1.113-2.147-2.004-3.847l-.032-.061a429.497 429.497 0 0 1-2.005-3.847c-.368-.745-1.107-1.447-2.152-1.447Zm-.808 2.112c.404-.816 1.212-.816 1.616 0 .202.409 1.112 2.145 2.022 3.88a418.904 418.904 0 0 1 2.018 3.875c.404.817 0 1.633-1.212 1.633h-7.272c-1.212 0-1.617-.816-1.212-1.633.202-.408 1.113-2.147 2.023-3.883a421.932 421.932 0 0 0 2.017-3.872Z"></path>
+              </svg>
+            </span>
+            <h2>App Embeds Are Disabled</h2>
+          </div>
+        </div>
+      </div>
+      <div class="otsb_warning_message_container">
+        <p>
+          To use this section, the app embeds of OT: Theme Sections must be enabled in the theme editor. Please follow
+          these steps to activate them:
+        </p>
+        <ul>
+          <li>In the left panel, click the last icon that says <b>“App embeds”</b>.</li>
+          <li>Enter <b>“OT”</b> on the search bar to quickly find and embed the apps from OT: Theme Sections.</li>
+          <li>
+            Turn on the Toggle buttons of "Section Builder Script" and "Section Builder Style", then click <b>Save</b>.
+          </li>
+        </ul>
+        <p>
+          Please refer to the User Guide
+          <a
+            href="https://support.omnithemes.com/blogs/ot-theme-sections-get-started/1-embed-app-to-shopify-theme"
+            target="_blank"
+            >here</a
+          >
+        </p>
+        <p>
+          For further support: feel free to contact us at
+          <a href="mailto:support@omnithemes.com">support@omnithemes.com</a>!
+        </p>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<div class="otsb__root otsb_nope" x-data="otsb_script_1">
+  {% render 'otsb-section-divider' %}
+  <div class="otsb-{{ section.id }} event-container event-{{ section.id }} ml-auto mr-auto relative page-width mx-auto">
+    <div class="mb-8 lg:mb-10">
+      {%- if section.settings.heading != blank -%}
+        <{{ section.settings.heading_tag }} class="otsb-title heading--{{ section.id }} otsb-h2 block text-{{ section.settings.heading_alignment }} leading-tight flex-auto p-break-words">
+          {{- section.settings.heading | escape -}}
+        </{{ section.settings.heading_tag }}>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <div class="event-description mb-6 md:mb-10 otsb-rte text-{{ section.settings.heading_alignment }}">
+          {{ section.settings.description }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="otsb-grid{% if section.settings.desktop_layout == "2" %} md:otsb-grid-cols-2 gap-x-7{% endif %}{% unless section.settings.border_column == "line" %} gap-y-7{% endunless %}">
+      {%- for block in section.blocks -%}
+        {% liquid
+          if block.settings.button_label_add_calendar != blank
+            assign add_to_calendar = block.settings.button_label_add_calendar
+          else
+            assign add_to_calendar = 'Add to calendar'
+          endif
+
+          if block.settings.ticket_button_label != blank
+            assign ticket_button_label = block.settings.ticket_button_label
+          else
+            assign ticket_button_label = 'Buy Tickets'
+          endif
+
+          assign date = block.settings.month | append: block.settings.day | date: '%b %d' | append: ', ' | append: block.settings.start_year
+          assign compare_date = date | date: '%s' | times: 1
+          assign show_end_date = false
+          assign show_end_time = false
+          assign start_hour = block.settings.start_hour | times: 1
+          assign start_minute = block.settings.start_minute | times: 1
+          assign end_hour = block.settings.end_hour | times: 1
+          assign end_minute = block.settings.end_minute | times: 1
+
+          if section.settings.timeformat == '12'
+            if start_hour == 12
+              assign timeStart = 12 | append: ':' | append: block.settings.start_minute | append: ' PM'
+            elsif start_hour == 0
+              assign timeStart = 12 | append: ':' | append: block.settings.start_minute | append: ' AM'
+            elsif start_hour > 12
+              assign timeStart = block.settings.start_hour | minus: 12
+              if timeStart < 10
+                assign timeStart = '0' | append: timeStart | append: ':' | append: block.settings.start_minute | append: ' PM'
+              else
+                assign timeStart = timeStart | append: ':' | append: block.settings.start_minute | append: ' PM'
+              endif
+            else
+              assign timeStart = block.settings.start_hour | append: ':' | append: block.settings.start_minute | append: ' AM'
+            endif
+            if end_hour == 12
+              assign timeEnd = 12 | append: ':' | append: block.settings.end_minute | append: ' PM'
+            elsif end_hour == 0
+              assign timeEnd = 12 | append: ':' | append: block.settings.end_minute | append: ' AM'
+            elsif end_hour > 12
+              assign timeEnd = block.settings.end_hour | minus: 12
+              if timeEnd < 10
+                assign timeEnd = '0' | append: timeEnd | append: ':' | append: block.settings.end_minute | append: ' PM'
+              else
+                assign timeEnd = timeEnd | append: ':' | append: block.settings.end_minute | append: ' PM'
+              endif
+            else
+              assign timeEnd = block.settings.end_hour | append: ':' | append: block.settings.end_minute | append: ' AM'
+            endif
+          else
+            assign timeStart = block.settings.start_hour | append: ':' | append: block.settings.start_minute
+            assign timeEnd = block.settings.end_hour | append: ':' | append: block.settings.end_minute
+          endif
+
+          assign end_date = block.settings.end_month | append: block.settings.end_day | date: '%b %d' | append: ', ' | append: block.settings.end_year
+          assign compare_end_date = end_date | date: '%s' | times: 1
+          if block.settings.show_end_date and compare_end_date > compare_date
+            assign show_end_date = true
+          elsif block.settings.show_end_date and compare_end_date == compare_date and end_hour > start_hour
+            assign show_end_time = true
+          elsif block.settings.show_end_date and end_hour == start_hour and end_minute > start_minute
+            assign show_end_time = true
+          endif
+        %}
+        {%- capture dataEventItem -%}
+      {
+      "sectionID": "{{ section.id }}",
+      "blockID": "{{ block.id }}",
+      "title": "{{ block.settings.heading | escape }}",
+      "location": "{{ block.settings.location | default: '' | escape }}",
+      "details": "{{ block.settings.content | strip_html | escape | default: '' }}",
+      "description": "{{ block.settings.content | default: '' | escape }}",
+      "start_year": "{{ block.settings.start_year }}",
+      "month": "{{ block.settings.month }}",
+      "day": "{{ block.settings.day }}",
+      "end_year": "{{ block.settings.end_year }}",
+      "end_month": "{{ block.settings.end_month }}",
+      "end_day": "{{ block.settings.end_day }}",
+      "date": "{{ date }}",
+      "end_date": "{{ end_date }}",
+      "timeStart": "{{ timeStart }}",
+      "timeEnd": "{{ timeEnd }}",
+      "start_hour" : "{{ block.settings.start_hour }}",
+      "end_hour" : "{{ block.settings.end_hour }}",
+      "start_minute" : "{{ block.settings.start_minute }}",
+      "end_minute" : "{{ block.settings.end_minute }}",
+      "show_end_date": {{ show_end_date }},
+      "show_end_time": {{ show_end_time }},
+      "timezone": "{{ section.settings.timezone }}",
+      "image": {% if block.settings.image != blank %}"{{ block.settings.image | image_url }}"{% else %}false{% endif %},
+      "button_label_add_calendar": "{{ add_to_calendar | escape }}",
+      "show_button_style": "{{ block.settings.show_button_style }}",
+      "ticket_button_label": "{{ ticket_button_label | escape }}",
+      "offer_tickets": {{ block.settings.offer_tickets }},
+      "ticket_link": "{{ block.settings.ticket_link | url_encode }}",
+      "ticket_button_label_style": "{{ block.settings.ticket_button_label_style }}"
+      }
+    {%- endcapture %}
+        <div
+          x-data=""
+          id="x-data-event-{{ block.id }}"
+          class="
+            event-block flex gap-x-5 lg:gap-x-7 event-{{ block.id }}{% if block.settings.image != blank %} flex flex-col lg:flex-row lg:items-start{% endif %}
+            {% if section.settings.border_column == "border" %} border border-dashed p-6 {% if section.settings.edges_type == 'rounded_corners' %} rounded-lg{% endif %}{% endif %}
+            {% if section.settings.border_column == "line" %} border-b pb-7 pt-7{% unless forloop.index > 1 %} border-t{% endunless %}{% if forloop.index == 2 and section.settings.desktop_layout == "2" %} md:border-t{% endif %}{% endif %}
+          "
+          x-event-data="{{ dataEventItem | escape }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="{% if block.settings.image != blank %} w-full lg:max-w-[300px] overflow-hidden{% endif %} relative">
+            {% if block.settings.image != blank %}
+              <div
+                {{ section.settings.image_ratio }}
+                class="relative block{% if section.settings.image_ratio != "auto" %} h-0 {% endif %}{% if section.settings.edges_type == 'rounded_corners' %} overflow-hidden rounded-lg{% endif %}"
+                {% if section.settings.image_ratio == 'auto' %}
+                  style="padding-bottom: {{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100 }}%;"
+                {% else %}
+                  style="padding-bottom: {{ section.settings.image_ratio }}"
+                {% endif %}
+              >
+                <img
+                  class="block max-w-full otsb-image-hover absolute top-0 left-0 h-full w-full object-cover object-center"
+                  srcset="
+                    {{ block.settings.image | image_url: width: 375 }} 375w,
+                    {{ block.settings.image | image_url: width: 450 }} 450w,
+                    {{ block.settings.image | image_url: width: 750 }} 750w,
+                    {{ block.settings.image | image_url: width: 900 }} 900w,
+                    {{ block.settings.image | image_url: width: 1100 }} 1100w,
+                    {{ block.settings.image | image_url: width: 1500 }} 1500w,
+                    {{ block.settings.image | image_url: width: 1780 }} 1780w,
+                    {{ block.settings.image | image_url: width: 2000 }} 2000w,
+                    {{ block.settings.image | image_url: width: 3000 }} 3000w,
+                    {{ block.settings.image | image_url: width: 3840 }} 3840w
+                  "
+                  sizes="(min-width: 1200px) 450px, (min-width: 768px) 375px, 100vw"
+                  src="{{ block.settings.image | image_url: width: 3840 }}"
+                  {% if block.settings.image_lazy == true %}
+                    loading="lazy"
+                  {% endif %}
+                  alt="{{ block.settings.image.alt | escape }}"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.width | divided_by: block.settings.image.aspect_ratio }}"
+                  style="object-position: {{ block.settings.image.presentation.focal_point }};"
+                >
+              </div>
+            {% endif %}
+
+            <div class="event-day event-day-{{ section.id }} aspect-square{% if block.settings.image != blank %} absolute top-0 left-0 rtl:left-auto rtl:right-0 rtl:ml-0 rtl:mr-2 mt-2 mb-2 ml-2 pb-2 pt-2 pr-4 pl-4 lg:pb-1.5 lg:pt-1.5 lg:pl-4 lg:pr-4{% else %} pb-2.5 pt-2.5 pr-5 pl-5 lg:pb-2 lg:pt-2 lg:pl-5 lg:pr-5 border border-dashed border-[rgba(var(--color-link))]{% endif %} flex flex-col justify-center bg-[rgba(var(--date-color-background,255,255,255,0))] text-center{% if section.settings.edges_type == 'rounded_corners' %} rounded-lg{% endif %}">
+              <p class="event-day{{section.id}}__day text-large whitespace-nowrap h3">{{ block.settings.day }}</p>
+              <p class="font-medium">{{ block.settings.month | append: block.settings.day | date: '%b' }}</p>
+            </div>
+          </div>
+          <div class="lg:w-3/4 grow flex flex-col lg:justify-start{% if block.settings.image != blank %} pt-5 lg:pt-0 lg:pb-0{% endif %} gap-2">
+            {% if block.settings.heading != blank %}
+              {% assign heading_size = block.settings.heading_size | times: setting_base_size | times: 0.0001575 %}
+              {% style %}
+                .otsb__root .heading-{{ block.id }} { font-size: {{ heading_size | times: 0.8 }}rem; }
+                @media screen and (min-width: 1025px) {
+                .otsb__root .heading-{{ block.id }} {
+                  font-size: {{ heading_size }}rem;
+                }
+                }
+              {% endstyle %}
+              <div
+                class="otsb-title heading-{{ block.id }} otsb-hover-text-link otsb-h3 h3 cursor-pointer"
+                @click="$store.xEventCalendarDetail.load($el, '{{ block.id }}')"
+              >
+                {{ block.settings.heading }}
+              </div>
+            {% endif %}
+            <div class="font-medium flex flex-wrap gap-1.5 mt-2 lg:mt-1{% if show_end_date %} flex-col{% endif %}">
+              <div class="inline-flex items-start pl-[calc(17px+0.25rem)] rtl:pl-0 rtl:pr-[calc(17px+0.25rem)] flex-col relative">
+                <span class="w-[17px] h-[18px] absolute left-0 top-[calc((100%-18px)/2)] rtl:left-auto rtl:right-0">
+                  {%- render 'otsb-icon-alls', icon: 'icon-clock' -%}
+                </span>
+                {% if show_end_date %}
+                  <div class="event-day">
+                    <p>{{ date }} @ {{ timeStart }} -</p>
+                    <p>{{ end_date }} @ {{ timeEnd }}</p>
+                  </div>
+                {% elsif show_end_time %}
+                  <span class="event-day">{{ timeStart }} - {{ timeEnd }}</span>
+                {% else %}
+                  <span class="event-day">{{ timeStart }}</span>
+                {% endif %}
+              </div>
+              {% if block.settings.show_end_date and compare_end_date < compare_date and request.design_mode %}
+                <p class="relative event-error pl-5 rtl:pl-0 rtl:pr-5 text-[rgba(var(--color-error,225,43,40))]">
+                  <span class="absolute left-0 rtl:left-auto rtl:right-0 top-1/2 -translate-y-1/2 w-3">
+                    {%- render 'otsb-icon-alls', icon: 'icon-error' -%}
+                  </span>
+                  <span class="cart-item__error-text text-sm p-break-words">End time must comes after start time</span>
+                </p>
+              {% endif %}
+              {% if block.settings.location != blank %}
+                {% assign has_map = true %}
+                <div class="flex items-start pl-[calc(17px+0.25rem)] rtl:pl-0 rtl:pr-[calc(17px+0.25rem)] relative">
+                  <span class="w-[17px] h-[18px] inline-block absolute left-0 top-[calc((100%-18px)/2)] rtl:left-auto rtl:right-0">
+                    {%- render 'otsb-icon-alls', icon: 'icon-location-1' -%}
+                  </span>
+                  <span>{{ block.settings.location }}</span>
+                </div>
+              {% endif %}
+            </div>
+            <div class="mt-2 otsb-rte line-clamp-4">{{ block.settings.description }}</div>
+            <div class="flex gap-3 flex-wrap grow items-end lg:items-start lg:grow-0 mt-6 mb-0.5">
+              {% if block.settings.offer_tickets %}
+                <a
+                  {% if block.settings.ticket_link == blank %}
+                    role="link" aria-disabled="true"
+                  {% else %}
+                    href="{{ block.settings.ticket_link }}"
+                  {% endif %}
+                  class="otsb-button{% if block.settings.ticket_button_label_style == 'primary' %} otsb-btn__solid{% else %} otsb-button-outline{% endif %} {{ btnType }} {{ btnAnimation }} {% if block.settings.ticket_link == blank %} opacity-60 cursor-not-allowed{% endif %} border button--{{ section.id }} flex flex-row rtl:flex-row-reverse items-center empty:hidden !pl-5 !pr-5 md:pl-6 md:pr-6 pt-2.5 pb-2.5 md:pt-3 md:pb-3 leading-normal"
+                  @click="open = !open"
+                >
+                  <span class="otsb-btn-text is-focus-button:opacity-0">
+                    {{ ticket_button_label }}
+                  </span>
+                  {% if section.settings.button_animation == 'sliced'
+                    and block.settings.ticket_button_label_style == 'primary'
+                  %}
+                    <span class="otsb-btn-icon opacity-0 -translate-x-[5px]">
+                      {% if section.settings.custom_icon_button != blank %}
+                        {{ section.settings.custom_icon_button }}
+                      {% else %}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewbox="0 0 20 20"
+                          fill="none"
+                          style="fill:none"
+                        >
+                          <path d="M4.25 9.49927H14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <path d="M9.5 4.24927L14.75 9.49927L9.5 14.7493" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                      {% endif %}
+                    </span>
+                  {% endif %}
+                </a>
+              {% endif %}
+              <div class="relative" x-data="xEventCalendar({{ dataEventItem | escape }})" @click.away="open = false">
+                <button
+                  class="otsb-button{% if block.settings.show_button_style == 'primary' %} otsb-btn__solid{% else %} otsb-button-outline{% endif %} border button--{{ section.id }} {{ btnType }} {{ btnAnimation }} flex flex-row rtl:flex-row-reverse items-center empty:hidden !pl-5 !pr-5 md:pl-6 md:pr-6 pt-2.5 pb-2.5 md:pt-3 md:pb-3 leading-normal otsb-btn__no-sliced"
+                  @click="open = !open"
+                >
+                  <span class="otsb-btn-text is-focus-button:opacity-0">{{ add_to_calendar }}</span>
+                  <span
+                    class="w-2.5 relative transition-none duration-200 inline-block ml-1.5 rtl:ml-0 rtl:mr-1.5"
+                    :class="open ? 'rotate-180' : 'top-[1px]'"
+                  >
+                    {% render 'otsb-icon-alls', icon: 'icon-caret' %}
+                  </span>
+                </button>
+                <div
+                  class="atcb-list left-0 w-full flex flex-col gap-y-4 md:max-w-[15rem] absolute top-full z-40 bg-[rgba(var(--color-background))] shadow-[0_0_6px_-4px_rgba(var(--colors-text,36,36,36,1))] pt-5 pb-5 pl-5 pr-5"
+                  x-cloak
+                  x-show="open"
+                  role="list"
+                >
+                  <button
+                    class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                    role="link"
+                    data-option-number="1"
+                    id="atcb-btn-1-apple"
+                    aria-label="Apple"
+                    @click="addToCal('apple'); open = false"
+                  >
+                    <span class="atcb-text inline-block button-link otsb-hover-text-link">Apple</span>
+                  </button>
+                  <button
+                    class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                    role="link"
+                    data-option-number="2"
+                    id="atcb-btn-1-google"
+                    aria-label="Google"
+                    @click="addToCal('google'); open = false"
+                  >
+                    <span class="atcb-text inline-block button-link otsb-hover-text-link">Google</span>
+                  </button>
+                  <button
+                    class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                    role="link"
+                    data-option-number="3"
+                    id="atcb-btn-1-outlookcom"
+                    aria-label="Outlook"
+                    @click="addToCal('outlook'); open = false"
+                  >
+                    <span class="atcb-text inline-block button-link otsb-hover-text-link">Outlook</span>
+                  </button>
+                  <button
+                    class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                    role="link"
+                    data-option-number="4"
+                    id="atcb-btn-1-yahoo"
+                    aria-label="Yahoo"
+                    @click="addToCal('yahoo'); open = false"
+                  >
+                    <span class="atcb-text inline-block button-link otsb-hover-text-link">Yahoo</span>
+                  </button>
+                  <button
+                    class="atcb-list-item text-left rtl:text-right relative cursor-pointer"
+                    role="link"
+                    data-option-number="4"
+                    id="atcb-btn-1-ical"
+                    aria-label="Ical"
+                    @click="addToCal('ical'); open = false"
+                  >
+                    <span class="atcb-text inline-block button-link otsb-hover-text-link">Ical</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+  {% if has_map %}
+    <script>
+    requestAnimationFrame(() => {
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("xMap", (data) => ({
+          load() {
+            this.$el.querySelector("iframe").src = `https://maps.google.com/maps?q=${data}&t=m&z=17&ie=UTF8&output=embed&iwloc=near`;
+          },
+          loadMap(location) {
+            this.$el.querySelector("iframe").src = `https://maps.google.com/maps?q=${location}&t=m&z=17&ie=UTF8&output=embed&iwloc=near`;
+          },
+          removeMap() {
+            this.$el.querySelector("iframe").src = ``;
+          }
+        }));
+      });
+    });
+    </script>
+  {% endif %}
+  {% render 'otsb-event-calendar-detail' %}
+</div>
+<script src="{{ 'otsb-event-calendar.min.js' | asset_url }}" defer></script>

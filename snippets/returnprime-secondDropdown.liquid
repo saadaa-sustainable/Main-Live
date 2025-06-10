@@ -1,0 +1,254 @@
+{% if request.path contains 'return_prime' %}
+  <script>
+    // State management
+    let options = [];
+    let selectedOptionValue = sessionStorage.getItem('selectedOptionValue') || "";
+    let lastSelectedReason = sessionStorage.getItem('lastSelectedReason') || "";
+    let isNavigationAllowed = false;
+
+    function getOptions(selectedReason) {
+        switch (selectedReason) {
+          case "I don't Like it":
+            return [
+              "It doesn't look good on me",
+              "Color is Different",
+              "Not as shown in the image",
+              "Poor Quality",
+              "Not worth the price",
+              "Received wrong item"
+            ];
+          case "Ordered by mistake":
+            return [
+              "Selected wrong product / size / color",
+              "Exchange already placed",
+              "No longer needed",
+              "Not needed anymore",
+              "Changed mind",
+              "Someone else ordered"
+            ];
+          case "Delivery Issue / Wrong Item Delivered":
+            return [
+              "Damaged by Carrier / Parcel was open",
+              "Delivered to someone else",
+              "Missing Items",
+              "Wrong Product Delivered",
+              "Packaging not intact"
+            ];
+          case "TOO SMALL / TIGHT":
+            return [
+              "Length",
+              "Waist",
+              "Hip",
+              "Chest",
+              "Shoulder",
+              "Sleeve",
+              "Thigh",
+              "Calf",
+              "Foot Length"
+            ];
+          case "TOO BIG / LOOSE":
+            return [
+              "Length",
+              "Waist",
+              "Hip",
+              "Chest",
+              "Shoulder",
+              "Sleeve",
+              "Thigh",
+              "Calf",
+              "Foot Length"
+            ];
+          case "FABRIC QUALITY IS NOT UPTO EXPECTATION":
+            return [
+              "What concers you about fabric -",
+              "I don't like the fabric",
+              "Fabric looks old / dull",
+              "Fabric doesn't feel Good on skin",
+              "Spots / Stains",
+              "Fabric is See Throgh / Transparent",
+              "Fabric is too heavy"
+            ];
+          case "Defective Product Delivered":
+            return [
+              "Spots / Stains",
+              "Holes or Torn",
+              "Zip, Button, etc were Broken / Missing",
+              "Sticth Broke before or after wearing"
+            ];
+          default:
+            return [];
+        }
+      }
+
+
+    function sendPayload(payload) {
+      document.dispatchEvent(new CustomEvent("returnprime_custom_field", { detail: payload }));
+    }
+
+    function initializeReasonDropdown() {
+      console.log('Initializing reason dropdown');
+      const reasonFields = document.querySelectorAll(".select__field");
+      reasonFields.forEach((item) => {
+        const label = item?.querySelector("label div")?.textContent?.trim() || 
+                      item?.querySelector("label")?.textContent?.trim();
+                      
+        if (label === "Reason") {
+          console.log('Found reason field');
+          const selectElement = item.querySelector("select");
+          if (selectElement) {
+            if (lastSelectedReason) {
+              const optionToSelect = Array.from(selectElement.options).find(
+                (option) => option.textContent.trim() === lastSelectedReason
+              );
+              if (optionToSelect) {
+                optionToSelect.selected = true;
+                options = getOptions(lastSelectedReason);
+              }
+            }
+
+            selectElement.addEventListener("change", function (event) {
+              const selectedOption = selectElement.selectedOptions[0];
+              const selectedReason = selectedOption?.textContent?.trim();
+              console.log('Reason selected:', selectedReason);
+              lastSelectedReason = selectedReason;
+              sessionStorage.setItem("lastSelectedReason", selectedReason);
+
+              options = getOptions(selectedReason);
+              updateSecondDropdown();
+            });
+
+            if (lastSelectedReason) {
+              updateSecondDropdown();
+            }
+          }
+        }
+      });
+    }
+
+    function getSelectedValue() {
+      const selectElement = document.getElementById("more_info");
+      if (selectElement) {
+        selectedOptionValue = selectElement.value;
+        sessionStorage.setItem("selectedOptionValue", selectedOptionValue);
+      }
+    }
+
+    function updateSecondDropdown() {
+      console.log('Updating second dropdown with options:', options);
+      let secondDropDown = document.getElementById("secondDropdownContainer");
+      if (!secondDropDown) {
+        secondDropDown = document.createElement("div");
+        secondDropDown.style.marginBottom = '12px';
+        secondDropDown.className = "select__field";
+        secondDropDown.id = "secondDropdownContainer";
+
+        const parentElement = document.querySelector(".line__items-list");
+        if (parentElement) {
+          parentElement.append(secondDropDown);
+          console.log('Added second dropdown to parent');
+        } else {
+          console.log('Parent element not found for second dropdown');
+        }
+      }
+
+      secondDropDown.innerHTML = `
+        <label for="more_info">Please tell us more:</label>
+        <select id='more_info' onchange="getSelectedValue()">
+          <option disabled ${!selectedOptionValue ? 'selected' : ''} value> -- Select an option -- </option>
+          ${options
+            .map(
+              (option) =>
+                `<option value="${option}" ${
+                  option === selectedOptionValue ? "selected" : ""
+                }>${option}</option>`
+            )
+            .join("")}
+        </select>
+      `;
+    }
+
+    function handleFormSubmission(e) {
+      if (!selectedOptionValue) {
+        e.preventDefault();
+        e.stopPropagation();
+        alert("Please provide more value");
+        return false;
+      }
+      
+      const payload = [{ key: "Second Reason", value: selectedOptionValue }];
+      sendPayload(payload);
+      isNavigationAllowed = true;
+      return true;
+    }
+
+    function nextButtonClickHandler(e) {
+      if (e.target.classList.contains("next__btn")) {
+        if (!handleFormSubmission(e)) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }
+    }
+
+    function preventNavigation(e) {
+      if (!isNavigationAllowed && e.target.classList.contains("next__btn")) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleFormSubmission(e);
+      }
+    }
+
+    function backButtonClickHandler(e) {
+      if (e.target.classList.contains("back__btn")) {
+        initializeReasonDropdown();
+      }
+    }
+
+    // Main initialization function that can be called both on page load and by events
+    function initialize() {
+      console.log('Initializing return prime functionality');
+      
+      // Initialize the first dropdown immediately
+      setTimeout(initializeReasonDropdown, 500);
+      
+      // Add multiple layers of navigation prevention
+      document.addEventListener("click", preventNavigation, true);  // Capture phase
+      document.addEventListener("submit", preventNavigation, true); // Capture phase
+      document.addEventListener("click", nextButtonClickHandler);
+      document.addEventListener("click", backButtonClickHandler);
+      
+      // Prevent form submission
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.addEventListener('submit', handleFormSubmission, true);
+      });
+    }
+
+    // Check if we're on the return prime page
+    if (window.location.pathname.includes("return_prime")) {
+      console.log('On return prime page - setting up event listeners');
+      
+      // Handle the custom event if it comes later
+      document.addEventListener("returnprime_return_page", initialize);
+      
+      // Also handle page load directly
+      // if (document.readyState === 'loading') {
+      //   document.addEventListener('DOMContentLoaded', initialize);
+      // } else {
+      //   // DOMContentLoaded has already fired
+      //   initialize();
+      // }
+
+      document.addEventListener("returnprime_orderlist_page", () => {
+        console.log('On order list page - resetting state');
+        sessionStorage.removeItem("selectedOptionValue");
+        sessionStorage.removeItem("lastSelectedReason");
+        selectedOptionValue = "";
+        lastSelectedReason = "";
+        options = [];
+        isNavigationAllowed = false;
+      });
+    }
+  </script>
+{% endif %}
