@@ -22,24 +22,35 @@
 
 <safe-sticky class="product-info {% if center_basic_info %}product-info--center{% endif %}">
   <div class="product-info__block-list">
-    <div class="product_belongs_collection" id = "breadcrumbs">
-      <span>
-        <a href="/">Home</a>
-        /
-      </span>
-      {% for collection in product.collections %}
-        {% if collection.title contains 'Shop All' %}
-          <span>
-            <a href="{{collection.url }}">{{ collection.title }}</a>
-            /
-          </span>
-        {% endif %}
-      {% endfor %}
+   <div class="product_belongs_collection" id="breadcrumbs">
+  <span>
+    <a href="/">Home</a>
+    /
+  </span>
 
-      <span>
-        <a href="{{selected_collection.url }}">{{ selected_collection.title | capitalize }}</a>
-      </span>
-    </div>
+  {% assign special_collections = "AIRY-LINEN SHORTS,MEN AIRY-LINEN SHORT KURTAS,AIRY LINEN PANTS,THE FORMAL PANTS" | split: "," %}
+
+  {% if special_collections contains selected_collection.title %}
+    <span>
+      <a href="/collections/goodbye-edition">Goodbye Edition</a>
+      /
+    </span>
+  {% else %}
+    {% for collection in product.collections %}
+      {% if collection.title contains 'Shop All' %}
+        <span>
+          <a href="{{ collection.url }}">{{ collection.title }}</a>
+          /
+        </span>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  <span>
+    <a href="{{ selected_collection.url }}">{{ selected_collection.title | capitalize }}</a>
+  </span>
+</div>
+
     {%- liquid
       assign inside_block_group_context = false
       assign current_block_group_name = ''
@@ -304,7 +315,7 @@
                   <span class="ps_value">
                     {{ product.metafields.custom.product_specification.value.ps_value_6.value }}
                   </span>
-                </div>
+                 
               </div>
                <small><b>Disclaimer: There might be a slight variation in the actual color of the product due to different screen resolutions.</b></small>
               </div>
@@ -687,6 +698,91 @@
     {%- endform -%}
   {%- endunless -%}
 
+
+ 
+<div class="service_main_container">
+    <div class="service_content_box popup_click" data-service="service_1">
+      <img src="{{ 'COD.png' | asset_img_url  }}" class="sevice_image">
+      <div>Free cash on delivery</div>
+      <div class="click_text">Learn more</div>
+    </div>
+    <div class="service_content_box popup_click" data-service="service_2">
+      <img src="{{ 'Return.png' | asset_img_url  }}" class="sevice_image">
+      <div>7 Days Return & Exchange</div>
+      <div class="click_text">Learn more</div>
+    </div>
+    <div class="service_content_box popup_click" data-service="service_3">
+      <img src="{{ 'Free_Delivery.png' | asset_img_url  }}" class="sevice_image">
+      <div>Free shipping</div>
+      <div class="click_text">Learn more</div>
+    </div>
+  </div>
+</safe-sticky>
+
+    
+{% if template.name == 'product' %}
+  <div class="overlay_wrapper" data-service="service_1">
+    <div class="close_overlay"></div>
+    <div class="overlay_content">
+      {%- render 'icon' with 'close' -%}
+      <div class="overlay_content_heading">Free COD available</div>
+      <div class="overlay_content_text">
+        <div>
+          At सादा | SAADAA, Cash on Delivery (COD) orders come with no extra charges. We believe in providing you with a
+          seamless and transparent payment experience, so you can enjoy the convenience of paying upon delivery without
+          any additional fees.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="overlay_wrapper" data-service="service_2">
+    <div class="close_overlay"></div>
+    <div class="overlay_content">
+      {%- render 'icon' with 'close' -%}
+      <div class="overlay_content_heading">Return / Exchange Policy</div>
+      <div class="overlay_content_text">
+        <div class="return_text">{{- section.settings.exchange_return_text -}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay_wrapper" data-service="service_3">
+    <div class="close_overlay"></div>
+    <div class="overlay_content">
+      {%- render 'icon' with 'close' -%}
+      <div class="overlay_content_heading">Hassle-Free Delivery</div>
+      <div class="overlay_content_text">
+        <div>{{- section.settings.free_shipping_text -}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay_wrapper" data-service="service_4">
+    <div class="close_overlay"></div>
+    <div class="overlay_content">
+      {%- render 'icon' with 'close' -%}
+      <div class="overlay_content_heading">Best Offers</div>
+      <div class="overlay_content_text offer_overlay_text">
+        {% if selected_collection.metafields.custom.offer_image.value != blank %}
+          {% render 'image',
+            class: '',
+            mobileSrc: selected_collection.metafields.custom.offer_image.value,
+            desktopSrc: selected_collection.metafields.custom.offer_image.value
+          %}
+        {% endif %}
+        <p>No promo codes are required. Automatic discount at checkout</p>
+        <p>1. Buy 2 & GET 15% off</p>
+        <p>2. Buy 3 & GET 20% off.</p>
+        <p>3. Buy 4 or more & GET 25% off</p>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+
+    
   {% if selected_collection.metafields.custom.specification_image.value %}
     <div class="wysb_container ">
       <h2 class="ps_heading">Why you will love this ?</h2>
@@ -740,6 +836,11 @@
     </div>
   {% endif %}
 
+
+
+
+     {% comment %} 
+
   {% if product.metafields.custom.style_with_product.value %}
     <div class="navigate" id="style_with">
       <h1 class="ps_heading">Pair it With</h1>
@@ -754,8 +855,12 @@
               data-collection="EVERYDAY COTTON PANTS"
             {% endif %}
           >
+
+    
             <div class="swp_wrapper">
               {{ product.featured_image | image_url: width: 150 | image_tag }}
+
+    {% endcomment %}
               {% comment %}
                 {% render 'image',
                   class: 'swp_image',
@@ -765,6 +870,8 @@
               {% endcomment %}
 
               {% comment %} <img src="{{ product.featured_image | image_url }}" class="swp_image" /> {% endcomment %}
+            
+          {% comment %}
               <div class="swp_info">
                 <div class="Heading h3">{{ product.title }}</div>
                 <button class="swp_button">SHOP NOW</button>
@@ -777,82 +884,14 @@
     </div>
   {% endif %}
 
-  <div class="service_main_container">
-    <div class="service_content_box popup_click" data-service="service_1">
-      <img src="{{ 'COD.png' | asset_img_url  }}" class="sevice_image">
-      <div>Free cash on delivery</div>
-      <div class="click_text">Learn more</div>
-    </div>
-    <div class="service_content_box popup_click" data-service="service_2">
-      <img src="{{ 'Return.png' | asset_img_url  }}" class="sevice_image">
-      <div>7 Days Return & Exchange</div>
-      <div class="click_text">Learn more</div>
-    </div>
-    <div class="service_content_box popup_click" data-service="service_3">
-      <img src="{{ 'Free_Delivery.png' | asset_img_url  }}" class="sevice_image">
-      <div>Free shipping</div>
-      <div class="click_text">Learn more</div>
-    </div>
-  </div>
-</safe-sticky>
 
-{% if template.name == 'product' %}
-  <div class="overlay_wrapper" data-service="service_1">
-    <div class="close_overlay"></div>
-    <div class="overlay_content">
-      {%- render 'icon' with 'close' -%}
-      <div class="overlay_content_heading">Free COD available</div>
-      <div class="overlay_content_text">
-        <div>
-          At सादा | SAADAA, Cash on Delivery (COD) orders come with no extra charges. We believe in providing you with a
-          seamless and transparent payment experience, so you can enjoy the convenience of paying upon delivery without
-          any additional fees.
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="overlay_wrapper" data-service="service_2">
-    <div class="close_overlay"></div>
-    <div class="overlay_content">
-      {%- render 'icon' with 'close' -%}
-      <div class="overlay_content_heading">Return / Exchange Policy</div>
-      <div class="overlay_content_text">
-        <div class="return_text">{{- section.settings.exchange_return_text -}}</div>
-      </div>
-    </div>
-  </div>
-  <div class="overlay_wrapper" data-service="service_3">
-    <div class="close_overlay"></div>
-    <div class="overlay_content">
-      {%- render 'icon' with 'close' -%}
-      <div class="overlay_content_heading">Hassle-Free Delivery</div>
-      <div class="overlay_content_text">
-        <div>{{- section.settings.free_shipping_text -}}</div>
-      </div>
-    </div>
-  </div>
+{% endcomment %}
 
-  <div class="overlay_wrapper" data-service="service_4">
-    <div class="close_overlay"></div>
-    <div class="overlay_content">
-      {%- render 'icon' with 'close' -%}
-      <div class="overlay_content_heading">Best Offers</div>
-      <div class="overlay_content_text offer_overlay_text">
-        {% if selected_collection.metafields.custom.offer_image.value != blank %}
-          {% render 'image',
-            class: '',
-            mobileSrc: selected_collection.metafields.custom.offer_image.value,
-            desktopSrc: selected_collection.metafields.custom.offer_image.value
-          %}
-        {% endif %}
-        <p>No promo codes are required. Automatic discount at checkout</p>
-        <p>1. Buy 2 & GET 15% off</p>
-        <p>2. Buy 3 & GET 20% off.</p>
-        <p>3. Buy 4 or more & GET 25% off</p>
-      </div>
-    </div>
-  </div>
-{% endif %}
+    
+
+ 
+
+
 
 
 <style>

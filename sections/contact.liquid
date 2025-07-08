@@ -48,6 +48,19 @@
           {%- render 'input', name: 'contact[body]', label: label, multiline: 4, required: true -%}
         </div>
 
+        
+<label style="display: flex; align-items: flex-start; font-family: Arial, sans-serif; font-size: 18px;">
+  <input type="checkbox" id="consent" style="color: #fff; width: 22px; height: 22px; margin-right: 8px;" checked>
+  <span style="
+    text-align: left;
+    font-size: 13px;
+">
+    By submitting this form, you hereby grant us permission to contact you via SMS, WhatsApp, RCS, Email, and any other channel.
+  </span>
+</label>
+
+      
+
         {%- assign button_content = 'contact.form.submit' | t -%}
         {%- render 'button', content: button_content, type: 'submit' -%}
       {%- endform -%}

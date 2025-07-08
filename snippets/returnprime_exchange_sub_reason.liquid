@@ -1,7 +1,7 @@
 {% if request.path contains 'return_prime' %}
   <script>
     // State management - use proper scoping
-    const ReturnPrime = {
+    const ReturnPrimeExchange = {
       options: [],
       selectedOptionValue: sessionStorage.getItem('selectedOptionValue') || "",
       lastSelectedReason: sessionStorage.getItem('lastSelectedReason') || "",
@@ -13,36 +13,40 @@
           "I don't Like it": [
             "It doesn't look good on me",
             "Color is Different", 
-            "Not as shown in the image",
-            "Poor Quality",
-            "Not worth the price",
-            "Received wrong item"
+            "Changed my mind after ordering",
+            'Preferred a different fit',
+            "Found Better Price Somewhere else",
+            "I don't like the fabric",
+            "Product is different from images on website",
+            "Don't need the product anymore"
           ],
           "Ordered by mistake": [
             "Selected wrong product / size / color",
-            "Exchange already placed",
-            "No longer needed",
-            "Not needed anymore", 
-            "Changed mind",
-            "Someone else ordered"
+            "Exchange it with a different product liked",
+            "Changed my mind after ordering",
+            "Found Better Price Somewhere else",
+            "Don't need the product anymore"
+          
           ],
           "Delivery Issue / Wrong Item Delivered": [
             "Damaged by Carrier / Parcel was open",
-            "Delivered to someone else",
-            "Missing Items",
-            "Wrong Product Delivered",
-            "Packaging not intact"
+            "Delivered late",
+            "Don't need the product anymore",
+            "Missing Part",
+            "Wrong Product / Size / Color Delivered",
+            "Found Better Price Somewhere else",
+            "Product is different from images on website"
+           
           ],
           "TOO SMALL / TIGHT": [
             "Length", "Waist", "Hip", "Chest", "Shoulder", 
-            "Sleeve", "Thigh", "Calf", "Foot Length"
+            "Sleeve", "Thigh", "Calf", "Foot Length","All over"
           ],
           "TOO BIG / LOOSE": [
             "Length", "Waist", "Hip", "Chest", "Shoulder",
-            "Sleeve", "Thigh", "Calf", "Foot Length"
+            "Sleeve", "Thigh", "Calf", "Foot Length","All over"
           ],
           "FABRIC QUALITY IS NOT UPTO EXPECTATION": [
-            "What concerns you about fabric -",
             "I don't like the fabric",
             "Fabric looks old / dull", 
             "Fabric doesn't feel Good on skin",
@@ -125,10 +129,12 @@
         if (!secondDropDown) {
           secondDropDown = document.createElement("div");
           secondDropDown.style.marginBottom = '12px';
+          secondDropDown.style.marginTop = '15px';
           secondDropDown.className = "select__field";
           secondDropDown.id = "secondDropdownContainer";
 
-          const parentElement = document.querySelector(".line__items-list");
+          const parentElement = document.querySelector(".reason__field");
+          console.log("parentElement",parentElement)
           if (parentElement) {
             parentElement.appendChild(secondDropDown);
             console.log('Added second dropdown to parent');
@@ -242,14 +248,14 @@
       console.log('On return prime page - setting up functionality');
       
       // Handle custom events
-      document.addEventListener("returnprime_return_page", () => ReturnPrime.init());
-      document.addEventListener("returnprime_orderlist_page", () => ReturnPrime.resetState());
+      document.addEventListener("returnprime_exchange_page", () => ReturnPrimeExchange.init());
+      document.addEventListener("returnprime_orderlist_page", () => ReturnPrimeExchange.resetState());
       
       // Initialize immediately if DOM is ready
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => ReturnPrime.init());
+        document.addEventListener('DOMContentLoaded', () => ReturnPrimeExchange.init());
       } else {
-        ReturnPrime.init();
+        ReturnPrimeExchange.init();
       }
     }
   </script>

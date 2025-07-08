@@ -145,3 +145,56 @@ Supported variables
     {%- render 'button', content: button_content, stretch: true -%}
   </noscript>
 </form>
+
+
+
+<style></style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Adjust this selector to your filter sidebar overlay
+  var filterSidebar = document.querySelector('.facets');
+  var bottomNav = document.querySelector('.fixed_nav_mobile');
+  var announcementBar = document.querySelector('.custom-announcement-bar');
+
+  // Utility: Set bars behind or normal
+  function setBarsBehind(behind) {
+    if (bottomNav) bottomNav.style.zIndex = behind ? 1 : 9999;
+    if (announcementBar) announcementBar.style.zIndex = behind ? 1 : 1000;
+  }
+
+  // If the filter sidebar is a modal with "open"/"active", observe for class change
+  if (filterSidebar) {
+    var observer = new MutationObserver(function() {
+      var style = window.getComputedStyle(filterSidebar);
+      var isOpen =
+        filterSidebar.classList.contains('open') ||
+        filterSidebar.classList.contains('active') ||
+        filterSidebar.classList.contains('opened') ||
+        filterSidebar.getAttribute('aria-hidden') === 'false' ||
+        (style.display === 'block' && filterSidebar.offsetWidth > 0);
+
+      setBarsBehind(isOpen);
+    });
+
+    observer.observe(filterSidebar, {
+      attributes: true,
+      attributeFilter: ['class', 'aria-hidden', 'style']
+    });
+
+    // Set initial state
+    setTimeout(function() {
+      var style = window.getComputedStyle(filterSidebar);
+      var isOpen =
+        filterSidebar.classList.contains('open') ||
+        filterSidebar.classList.contains('active') ||
+        filterSidebar.classList.contains('opened') ||
+        filterSidebar.getAttribute('aria-hidden') === 'false' ||
+        (style.display === 'block' && filterSidebar.offsetWidth > 0);
+      setBarsBehind(isOpen);
+    }, 200);
+  }
+});
+</script>
+
+

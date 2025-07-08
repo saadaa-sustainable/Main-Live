@@ -2383,13 +2383,65 @@ document.addEventListener("facet:update", async (event) => {
         detailsElement.open = openDetailsValues.has(inputName);
       });
     });
+
+
+
+
+
+    //recent changes to avoid bouce back to 1st screen after selecting the filter tab 
+
+
+let selectedTabValue = null;
+let filterScrollLeft = 0;
+
+const filterList = document.querySelector('.category-list');
+if (filterList) {
+  filterScrollLeft = filterList.scrollLeft;
+  const radios = filterList.querySelectorAll('input[type="radio"]');
+  radios.forEach((r) => { if (r.checked) selectedTabValue = r.value; });
+}
+
+
+
+    
     shopifySection.replaceChildren(...document.importNode(tempContent.querySelector(".shopify-section"), true).childNodes);
-    const scrollToProductList = () => shopifySection.querySelector(".collection").scrollIntoView({ block: "start", behavior: "smooth" });
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(scrollToProductList, { timeout: 500 });
+
+
+
+
+
+requestAnimationFrame(() => {
+  const newFilterList = document.querySelector('.category-list');
+  if (newFilterList) {
+    const radios = newFilterList.querySelectorAll('input[type="radio"]');
+    let checkedRadio = null;
+    radios.forEach((r) => { if (r.value === selectedTabValue) checkedRadio = r; });
+
+    if (checkedRadio && checkedRadio.parentElement) {
+      const tab = checkedRadio.parentElement;
+      // Center the checked tab
+      const left = tab.offsetLeft - (newFilterList.offsetWidth / 2) + (tab.offsetWidth / 2);
+      newFilterList.scrollTo({ left: left, behavior: "auto" });
     } else {
-      requestAnimationFrame(scrollToProductList);
+      newFilterList.scrollLeft = filterScrollLeft; // fallback
     }
+  }
+});
+
+
+
+
+
+
+
+
+    
+    // const scrollToProductList = () => shopifySection.querySelector(".collection").scrollIntoView({ block: "start", behavior: "smooth" });
+    // if ("requestIdleCallback" in window) {
+    //   requestIdleCallback(scrollToProductList, { timeout: 500 });
+    // } else {
+    //   requestAnimationFrame(scrollToProductList);
+    // }
   } catch (e) {
   }
 });

@@ -1,10 +1,9 @@
-<!-- Sticky Bar & Overlay using Shopify Liquid for Variants -->
 <style>
   @media (max-width: 768px) {
     /* ---------- STICKY CART BAR ---------- */
-    #sticky-cart-bar {
-        position: fixed;
-        bottom: 0;
+#sticky-cart-bar {
+  position: fixed;
+  bottom: 62px; /* Height of .fixed_nav, update if your nav is taller/shorter */
         left: 0;
         width: 100vw;
         background: #fff;
@@ -73,7 +72,7 @@
         position: fixed;
         left: 0;
         right: 0;
-        bottom: 101px;
+        bottom: 162px;
         background: #fff;
         z-index: 1200;
         display: none;
@@ -103,33 +102,35 @@
         cursor: pointer;
     }
 }
-    .variant-container {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 8px;
-      margin-top: 10px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .variant-container::-webkit-scrollbar {
+  .variant-container {
+  padding-top: 10px;
+  padding-bottom: 25px;
+  display: flex;
+  flex-wrap: wrap;     /* allow wrapping to new lines */
+  gap: 11px;
+  margin-top: 10px;
+  /* overflow-x: auto; */ /* REMOVE this */
+  /* -webkit-overflow-scrolling: touch; */ /* REMOVE this */
+  justify-content: flex-start; /* optional: align items to left */
+}
+
+    /* .variant-container::-webkit-scrollbar {
       display: none;
-    }
+    } */
     .variant-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
-      min-height: 55px;
+      min-height: 44px;
     }
     .variant-btn {
-        width: 40px;
-        height: 40px;
+        width: 2.6rem;
+        height: 2.6rem;
         font-size: 14px;
        
         border-radius: 50%;
-        border: 0.5px solid #000;
+        border: 1px solid #000;
         background-color: #fff;
         color: #000;
         cursor: pointer;
@@ -314,6 +315,17 @@ background-color: #fff !important;
   opacity: 1;
 }
 
+
+
+
+.overlay_wrapper.notify-me {
+  z-index: 1300 !important; /* Overlays the size selection */
+  position: fixed !important;
+  left: 0; right: 0; top: 0; bottom: 0;
+  display: none;
+  background: rgba(0,0,0,0.18); /* optional: dim background */
+}
+
 </style>
 
 <!-- Sticky Bar -->
@@ -372,16 +384,16 @@ background-color: #fff !important;
   <div class="variant-container">
     {% for variant in product.variants %}
       <div class="variant-wrapper">
-        <button 
-          type="button"
-          class="variant-btn{% if variant.inventory_quantity == 0 %} out-of-stock{% endif %}"
-          data-value="{{ variant.option1 }}"
-          data-variant-id="{{ variant.id }}" 
-          data-quantity="{{ variant.inventory_quantity }}"
-          {% if variant.inventory_quantity == 0 %}disabled{% endif %}
-        >
-          {{ variant.option1 }}
-        </button>
+      <button 
+  type="button"
+  class="variant-btn{% if variant.inventory_quantity == 0 %} out-of-stock{% endif %}"
+  data-value="{{ variant.option1 }}"
+  data-variant-id="{{ variant.id }}" 
+  data-quantity="{{ variant.inventory_quantity }}"
+>
+  {{ variant.option1 }}
+</button>
+
         <p class="stock-message">
           {% if variant.inventory_quantity > 5 and variant.inventory_quantity <= 8 %}
             <span class="few-left">Only Few Left</span>
@@ -393,6 +405,22 @@ background-color: #fff !important;
     {% endfor %}
   </div>
 </div>
+
+<!-- HIDDEN BUTTON TO TRIGGER NOTIFY ME -->
+<button type="button" style="display:none;" id="notifyMeTrigger" class="popup_click" data-service="service_31"></button>
+<!-- NOTIFY ME OVERLAY -->
+<div class="overlay_wrapper notify-me" data-service="service_31" style="display:none;">
+  <div class="close_overlay"></div>
+  <div class="overlay_content">
+    {%- render 'icon' with 'close' -%}
+    <div class="overlay_content_text">
+      {% render 'notify-me' %}
+    </div>
+  </div>
+</div>
+
+
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const productForm    = document.querySelector('form[action^="/cart/add"]');
@@ -404,8 +432,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const sizeOverlay    = document.getElementById('size-overlay');
   const modalBackdrop  = document.getElementById('modal-backdrop');
   const closeOverlayBtn= sizeOverlay.querySelector('.overlay-close');
+  const notifyMeTrigger = document.getElementById('notifyMeTrigger');
 
-  // determine when to show sticky bar
   let threshold = 0;
   const buyButtons = document.querySelector('.size_chart_container');
   if (buyButtons) {
@@ -424,39 +452,89 @@ document.addEventListener("DOMContentLoaded", function () {
   handleStickyBarVisibility();
 
   let selectedVariantId = null;
+  let selectedIsOOS     = false;
+  let reopenSizeOverlayAfterNotify = false; // Track if we need to reopen size overlay after notify-me
 
-  mainBtn.addEventListener('click', function(e) {
-    e.preventDefault();
+  // --- Variant Selection ---
+  document.querySelectorAll('.variant-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const isOut = this.classList.contains('out-of-stock');
+      selectedIsOOS = isOut;
+      document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('selected'));
+      this.classList.add('selected');
 
-      if ( mainBtn.classList.contains('ready') && selectedVariantId ) {
-    // find and click the real submit button so your theme's AJAX drawer runs
-    const submitBtn = productForm.querySelector('[type="submit"]');
-    if (submitBtn) {
-      submitBtn.click();
-    } else {
-      // fallback if you don't have a visible submit in the form
-      productForm.requestSubmit();
-    }
-    closeOverlay();
-    return;
-  }
+      selectedVariantId = this.getAttribute('data-variant-id');
+      if (variantInput) {
+        variantInput.value = selectedVariantId;
+        // Update event for Gokwik and other listeners
+        variantInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
 
-
-    // otherwise open the overlay + backdrop
-    sizeOverlay.style.display     = 'block';
-    modalBackdrop.style.display   = 'block';
-    document.body.style.overflowY = 'hidden';
-
-    // highlight any previously chosen size
-    document.querySelectorAll('.variant-btn').forEach(btn => {
-      btn.classList.toggle('selected', btn.getAttribute('data-variant-id') === selectedVariantId);
+      // Update sticky bar state
+      if (isOut) {
+        mainBtn.textContent = 'NOTIFY ME';
+        mainBtn.classList.remove('ready');
+      } else {
+        mainBtn.textContent = 'ADD TO CART';
+        mainBtn.classList.add('ready');
+      }
     });
   });
 
+  // --- Main Sticky Button Click ---
+
+mainBtn.addEventListener('click', function(e) {
+  e.preventDefault();
+
+  // If no size selected, open size overlay
+  if (!selectedVariantId) {
+    sizeOverlay.style.display = 'block';
+    modalBackdrop.style.display = 'block';
+    document.body.style.overflowY = 'hidden';
+    return;
+  }
+
+  // NOTIFY ME path
+  if (mainBtn.textContent === 'NOTIFY ME' && selectedIsOOS) {
+    reopenSizeOverlayAfterNotify = sizeOverlay.style.display === 'block';
+
+    let notifyInput = document.getElementById('variant_id');
+    if (notifyInput) notifyInput.value = selectedVariantId;
+
+    if (notifyMeTrigger) notifyMeTrigger.click();
+    return;
+  }
+
+  // ADD TO CART path
+  if (mainBtn.classList.contains('ready') && !selectedIsOOS) {
+    if (variantInput && variantInput.value !== selectedVariantId) {
+      variantInput.value = selectedVariantId;
+      variantInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    productForm.requestSubmit();
+    closeOverlay();
+    return;
+  }
+});
+
+
+
+
+  // --- Overlay Controls ---
   function closeOverlay() {
     sizeOverlay.style.display     = 'none';
     modalBackdrop.style.display   = 'none';
     document.body.style.overflowY = '';
+    if (!selectedVariantId) {
+      mainBtn.textContent = "SELECT A SIZE";
+      mainBtn.classList.remove("ready");
+    } else if (!selectedIsOOS) {
+      mainBtn.textContent = "ADD TO CART";
+      mainBtn.classList.add("ready");
+    } else {
+      mainBtn.textContent = "NOTIFY ME";
+      mainBtn.classList.remove("ready");
+    }
   }
 
   closeOverlayBtn.addEventListener('click', closeOverlay);
@@ -470,48 +548,186 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // variant selection
-  document.querySelectorAll('.variant-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      if (this.classList.contains('out-of-stock')) return;
-
-      document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('selected'));
-      this.classList.add('selected');
-
-      selectedVariantId = this.getAttribute('data-variant-id');
-      if (variantInput) {
-        variantInput.value = selectedVariantId;
-        variantInput.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-
-      mainBtn.textContent         = 'ADD TO CART';
-      mainBtn.classList.add('ready');
-      // keep overlay open so user can review stock message
-    });
-  });
-});
-
-
-
-// Toggle guarantee tooltip on click; close any other open one; close on outside click
-document.addEventListener('DOMContentLoaded', () => {
+  // --- Guarantee Tooltip (unchanged) ---
   const tooltips = document.querySelectorAll('.guarantee-tooltip');
   tooltips.forEach(tt => {
     tt.addEventListener('click', e => {
       e.stopPropagation();
-      // close others
       tooltips.forEach(other => {
         if (other !== tt) other.classList.remove('guarantee-active');
       });
-      // toggle this one
       tt.classList.toggle('guarantee-active');
     });
   });
-  // clicking anywhere else closes all
   document.addEventListener('click', () => {
     tooltips.forEach(tt => tt.classList.remove('guarantee-active'));
   });
+
+  // --- Notify Me Overlay (with re-show of size overlay) ---
+  document.querySelectorAll(".popup_click").forEach((service) =>
+    service.addEventListener("click", function () {
+      let active_service = service.dataset.service;
+      document.querySelectorAll(".overlay_wrapper").forEach((overlay) => {
+        if (overlay.dataset.service == active_service) {
+          overlay.classList.add("popup");
+          overlay.style.display = "block";
+          document.body.style.overflow = "hidden";
+        } else {
+          overlay.classList.remove("popup");
+          overlay.style.display = "none";
+        }
+      });
+    })
+  );
+  function close_overlay() {
+    document.querySelectorAll(".overlay_wrapper").forEach((overlay) => {
+      overlay.classList.remove("popup");
+      overlay.style.display = "none";
+    });
+    document.body.style.overflow = "";
+
+    // If we opened notify-me from size overlay, reopen size overlay now
+    if (reopenSizeOverlayAfterNotify) {
+      sizeOverlay.style.display     = 'block';
+      modalBackdrop.style.display   = 'block';
+      document.body.style.overflowY = 'hidden';
+      reopenSizeOverlayAfterNotify = false;
+    }
+
+    // Reset sticky cart button state if no variant is selected
+    if (!selectedVariantId) {
+      mainBtn.textContent = "SELECT A SIZE";
+      mainBtn.classList.remove("ready");
+    } else if (!selectedIsOOS) {
+      mainBtn.textContent = "ADD TO CART";
+      mainBtn.classList.add("ready");
+    } else {
+      mainBtn.textContent = "NOTIFY ME";
+      mainBtn.classList.remove("ready");
+    }
+  }
+  document.querySelectorAll(".close_overlay").forEach((close_overlay_div) =>
+    close_overlay_div.addEventListener("click", close_overlay)
+  );
+  document.querySelectorAll(".overlay_content .icon-close").forEach((close_overlay_svg) =>
+    close_overlay_svg.addEventListener("click", close_overlay)
+  );
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape") close_overlay();
+  });
+
+  // --- Shopify variant selector sync (for GoKwik/Shopify OptionSelectors, if used) ---
+  // If your theme or Gokwik updates variantInput elsewhere, update sticky ATC accordingly
+  if (variantInput) {
+    variantInput.addEventListener('change', function() {
+      selectedVariantId = variantInput.value;
+      // Find matching variant-btn and update selectedIsOOS
+      let btn = document.querySelector('.variant-btn[data-variant-id="' + selectedVariantId + '"]');
+      selectedIsOOS = btn && btn.classList.contains('out-of-stock');
+      // Update sticky bar button text
+      if (!selectedIsOOS) {
+        mainBtn.textContent = "ADD TO CART";
+        mainBtn.classList.add("ready");
+      } else {
+        mainBtn.textContent = "NOTIFY ME";
+        mainBtn.classList.remove("ready");
+      }
+    });
+  }
+
 });
 
 
+function updateATCBarPosition() {
+  var nav = document.querySelector('.fixed_nav');
+  var atcBar = document.getElementById('sticky-cart-bar');
+  if (!nav || !atcBar) return;
+  var navStyles = window.getComputedStyle(nav);
+  var navHeight = nav.offsetHeight;
+  var navVisible = navStyles.display !== "none" && !nav.classList.contains('hide-nav');
+
+  // Move ATC above nav if visible, else stick to bottom
+  if (navVisible) {
+    atcBar.style.bottom = navHeight + 'px';
+  } else {
+    atcBar.style.bottom = '0';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', updateATCBarPosition);
+window.addEventListener('resize', updateATCBarPosition);
+window.addEventListener('scroll', updateATCBarPosition);
+window.addEventListener('bottomNavVisibilityChanged', updateATCBarPosition);
+
+const nav = document.querySelector('.fixed_nav');
+if (nav) {
+  nav.addEventListener('transitionend', updateATCBarPosition);
+}
+
+
+
+
+// document.addEventListener("DOMContentLoaded", function () {
+//   // Only these linen shirt titles
+//   const linenShirts = [
+//     "Men Black 100% Linen Shirt",
+//     "Men Mango Yellow 100% Linen Shirt",
+//     "Men White 100% Linen Shirt",
+//     "Men Black 100% Linen Half Sleeve Shirt",
+//     "Men Mango Yellow 100% Linen Half Sleeve Shirt",
+//     "Men White 100% Linen Half Sleeve Shirt"
+//   ];
+//   // Get product title
+//   const titleElem = document.querySelector('h1.product-title');
+//   if (titleElem && linenShirts.includes(titleElem.textContent.trim())) {
+//     // Hide XS, 3XL, 4XL buttons in the overlay
+//     document.querySelectorAll('.variant-btn').forEach(btn => {
+//       const val = btn.getAttribute('data-value');
+//       if (["XS", "3XL", "4XL"].includes(val)) {
+//         // Hide the button's parent wrapper
+//         if (btn.parentElement) btn.parentElement.style.display = "none";
+//       }
+//     });
+//   }
+// });
+
+
+
+
+
+
+// document.addEventListener("DOMContentLoaded", function () {
+//   // Only these linen shirt titles
+//   const straightPant = [
+//     "Navy Blue Airy Linen Straight Pant",
+//     "Turquoise Airy Linen Straight Pant",
+//     "Black Airy Linen Straight Pant",
+//     "Rose Taupe Airy Linen Straight Pant"
+//   ];
+//   // Get product title
+//   const titleElem = document.querySelector('h1.product-title');
+//   if (titleElem && straightPant.includes(titleElem.textContent.trim())) {
+//     // Hide XS, 3XL, 4XL buttons in the overlay
+//     document.querySelectorAll('.variant-btn').forEach(btn => {
+//       const val = btn.getAttribute('data-value');
+//       if (["XS", "4XL" , "5XL"].includes(val)) {
+//         // Hide the button's parent wrapper
+//         if (btn.parentElement) btn.parentElement.style.display = "none";
+//       }
+//     });
+//   }
+// });
+
+
+
+
+  
+
+
+
+
+  
+
+  
 </script>
+

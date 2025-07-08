@@ -96,13 +96,13 @@ function navigate() {
       ? "flex"
       : "none";
 
-  if (
-   colorVariant && window.scrollY > colorVariant.offsetTop &&window.screen.availWidth < 1000
-  ) {
-    buy_buttons2.style.display = "block";
-  } else {
-    buy_buttons2.style.display = "none";
-  }
+  // if (
+  //  colorVariant && window.scrollY > colorVariant.offsetTop &&window.screen.availWidth < 1000
+  // ) {
+  //   buy_buttons2.style.display = "block";
+  // } else {
+  //   buy_buttons2.style.display = "none";
+  // }
 
 
 //  if (
@@ -147,3 +147,89 @@ if(x<2 && sizeSelectorToggle){
    x++;
 }
 })
+
+
+
+
+
+// JS to handle the toggle and search header disturbancy 
+
+const headerSearch = document.querySelector('header-search');
+const productToggle = document.querySelector('.product_toggle');
+
+// This function checks if search is open and hides/shows toggle accordingly
+function updateToggleVisibility() {
+  if (headerSearch.hasAttribute('open')) {
+    productToggle.classList.add('hide-when-search');
+  } else {
+    productToggle.classList.remove('hide-when-search');
+  }
+}
+
+// Observe for attribute changes (open/close)
+const observer = new MutationObserver(updateToggleVisibility);
+observer.observe(headerSearch, { attributes: true });
+
+// Extra insurance: listen for scroll, resize, and DOM changes
+window.addEventListener('scroll', updateToggleVisibility, { passive: true });
+window.addEventListener('resize', updateToggleVisibility);
+
+document.addEventListener('DOMContentLoaded', updateToggleVisibility); // Initial check on load
+
+// Optional: also check on visibilitychange (e.g., if tab is hidden then shown)
+document.addEventListener('visibilitychange', updateToggleVisibility);
+
+
+
+
+
+
+// document.addEventListener("DOMContentLoaded", function() {
+//     // List of shirt titles for which to hide the sizes
+//     const linenShirts = [
+//     "Men Black 100% Linen Shirt",
+//     "Men Mango Yellow 100% Linen Shirt",
+//     "Men White 100% Linen Shirt",
+//     "Men Black 100% Linen Half Sleeve Shirt",
+//     "Men Mango Yellow 100% Linen Half Sleeve Shirt",
+//     "Men White 100% Linen Half Sleeve Shirt"
+    
+//   ];
+//     // Find the product title on the page
+//     const titleElem = document.querySelector('h1.product-title');
+//     if (titleElem && linenShirts.includes(titleElem.textContent.trim())) {
+//         // Hide XS, 3XL, 4XL swatches
+//         ['option1-xs', 'option1-3xl', 'option1-4xl'].forEach(id => {
+//             document.querySelectorAll(`label[for*="${id}"]`).forEach(label => {
+//                 label.style.display = 'none';
+//             });
+//         });
+//     }
+// });
+
+
+
+
+
+
+
+// document.addEventListener("DOMContentLoaded", function() {
+//     // List of shirt titles for which to hide the sizes
+//     const straightPant = [
+//     "Navy Blue Airy Linen Straight Pant",
+//     "Turquoise Airy Linen Straight Pant",
+//     "Black Airy Linen Straight Pant",
+//     "Rose Taupe Airy Linen Straight Pant"
+    
+//   ];
+//     // Find the product title on the page
+//     const titleElem = document.querySelector('h1.product-title');
+//     if (titleElem && straightPant.includes(titleElem.textContent.trim())) {
+//         // Hide XS, 4XL, 5XL swatches
+//         ['option1-xs', 'option1-4xl', 'option1-5xl'].forEach(id => {
+//             document.querySelectorAll(`label[for*="${id}"]`).forEach(label => {
+//                 label.style.display = 'none';
+//             });
+//         });
+//     }
+// });

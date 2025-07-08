@@ -6,6 +6,15 @@
   dir="{% render 'direction' %}"
 >
   <head>
+    
+
+
+{% render 'link-preview-cards' %}
+
+
+
+    
+
     <script>
       {% for item in cart.items %}
        {% if item.title contains '100% Cotton' %}
@@ -25,6 +34,11 @@
              }
              }
     </script>
+
+
+    
+
+    
     <!-- begin Convert Experiences code -->
     <script type="text/javascript">
       // fill in the values for the variables that you want to use
@@ -121,11 +135,7 @@
     {%- endif -%}
 
     {%- comment -%}Few prefetch to increase performance on commonly used third-parties{%- endcomment -%}
-    <link
-      rel="preconnect"
-      href="https://fonts.shopifycdn.com"
-      crossorigin
-    >
+  
     <link rel="dns-prefetch" href="https://productreviews.shopifycdn.com">
 
     {%- unless settings.heading_font.system? -%}
@@ -195,7 +205,8 @@
         gtag('js', new Date());
 
       gtag('config', 'AW-464888547', {'send_page_view': false,'allow_enhanced_conversions': true});
-    </script>
+      
+    </script>   
   </head>
 
   {% liquid
@@ -434,7 +445,19 @@
           }, 1000);
       });
     </script>
-    {% comment %}{% render 'mobile-fixed-menus' %}{% endcomment %}
+
+   {% render 'mobile-fixed-menus' %}
+
     {% render 'returnprime-secondDropdown' %}
+    {% render 'returnprime_exchange_sub_reason' %}
+    
+    <!-- begin order-cancel code -->
+    {%- if template contains 'customers/account' or template contains 'customers/order' -%}
+      {{- 'codify-order-cancel.css' | asset_url | stylesheet_tag: preload: true -}}
+      <script src="{{ 'codify-order-cancel.js' | asset_url }}" defer></script>
+      {% render 'codify-order-cancel' %}      
+    {%- endif -%}
+    <!-- end order-cancel code -->
+
   </body>
 </html>

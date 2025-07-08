@@ -157,11 +157,144 @@
           </a>
         {%- endif -%}
 
+
+
+
+        
+
         <!-- Men/Women Toggle Buttons (Desktop & up) -->
-        <div class="menu-toggle-buttons hidden md:flex">
-  <a href="/" id="womenButton">Women</a>
-  <a href="/pages/men-showcase" id="menButton">Men</a>
+          
+<div class="custom-menu-toggle-buttons hidden md:flex">
+  <a href="/" id="custom-womenButton">Women</a>
+  <a href="/pages/men-showcase" id="custom-menButton">
+    Men
+    <img 
+      src="https://cdn.shopify.com/s/files/1/0450/3476/6485/files/new-product-alert.png?v=1750396957" 
+      alt="New badge" 
+      class="custom-new-badge-img"
+    >
+  </a>
 </div>
+
+<style>
+.custom-menu-toggle-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.custom-menu-toggle-buttons a {
+  color: #7C7C7C;
+  padding: 5px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease, border-color 0.3s ease;
+  border: 1px solid transparent;
+  border-radius: 21px;
+  background-color: transparent;
+  text-decoration: none !important;
+}
+.custom-menu-toggle-buttons a:visited,
+.custom-menu-toggle-buttons a:active,
+.custom-menu-toggle-buttons a:focus,
+.custom-menu-toggle-buttons a:hover {
+  text-decoration: none !important;
+}
+.custom-menu-toggle-buttons a.custom-active {
+  color: #000;
+  border-color: #000;
+}
+.custom-menu-toggle-buttons a.custom-active::before {
+  content: "\2713\FE0E";
+  font-size: 8px;
+  color: #fff;
+  position: absolute;
+  top: -7px;
+  right: 5px;
+  background: #000;
+  border-radius: 50%;
+  border: 2px solid #000;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.custom-menu-toggle-buttons a:not(.custom-active):hover {
+  color: #1F1F1F;
+  border-color: #ccc;
+}
+
+/* PNG badge styling & animation */
+.custom-new-badge-img {
+  display: inline-block;
+  position: absolute;
+  top: -13px;
+  right: -13px;
+  width: 28px;
+  height: 28px;
+  z-index: 1;
+  animation:
+    custom-bounce 1.1s infinite cubic-bezier(.36,.07,.19,.97),
+    custom-glow 1.2s infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes custom-bounce {
+  0%, 100% { transform: translateY(0);}
+  20% { transform: translateY(-4px);}
+  40% { transform: translateY(0);}
+  60% { transform: translateY(-2px);}
+  80% { transform: translateY(0);}
+}
+@keyframes custom-glow {
+  0% {
+    box-shadow: 0 0 0 0 #079c0a99;
+  }
+  100% {
+  
+  }
+}
+
+/* Hide PNG badge when Men is active */
+.custom-menu-toggle-buttons a.custom-active .custom-new-badge-img {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .custom-menu-toggle-buttons {
+    display: none;
+  }
+  .custom-menu-toggle-buttons a {
+    font-size: 18px;
+    padding: 4px 8px;
+  }
+  .custom-new-badge-img {
+    width: 22px;
+    height: 22px;
+    top: -8px;
+    right: -8px;
+  }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+    document.querySelectorAll('.custom-menu-toggle-buttons a').forEach(link => {
+      const linkPath = new URL(link.href, window.location.origin).pathname.replace(/\/$/, '') || '/';
+      if (linkPath === currentPath) {
+        link.classList.add('custom-active');
+      } else {
+        link.classList.remove('custom-active');
+      }
+    });
+  });
+</script>
+
+
+
+      
 
         <!-- If you have a standard main menu on desktop -->
         {%- if menu.links.size > 0 and section.settings.layout != 'drawer' -%}

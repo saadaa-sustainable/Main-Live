@@ -202,6 +202,8 @@
       <button class="toggle-button" data-category="shortkurta">Airy Linen Short Kurta</button>
       <button class="toggle-button" data-category="longKurta">Airy Linen Long Kurta</button>
       <button class="toggle-button" data-category="formalShirt">Formal Shirt</button>
+      <button class="toggle-button" data-category="linenFull">100% Linen Full Sleeve Shirt</button>
+      <button class="toggle-button" data-category="linenHalf">100% Linen Half Sleeve Shirt</button>
     </div>
     <div id="itemsContainer" class="menu-items-container"></div>
     <div class="view-all-bar">
@@ -223,16 +225,20 @@
       newarrival:  "men_home_new_arrival",
       shortkurta:  "men_home_MALSK",
       longKurta:   "men_home_MALLK",
-      formalShirt: "men_home_MFS"
+      formalShirt: "men_home_MFS",
+      linenFull:   "men_home_MLFS",    // Update if your tag is different
+      linenHalf:   "men_home_MLHS"     // Update if your tag is different
     };
 
     // ─────────── VIEW ALL links ───────────
     const viewAllLinks = {
       bestsellers: "https://saadaa.in/collections/men?view=best-sellers",
       newarrival:  "https://saadaa.in/collections/men?view=new-arrivals",
-      shortkurta:  "https://saadaa.in/collections/airy-linen-short-kurtas",
-      longKurta:   "https://saadaa.in/collections/airy-linen-long-kurtas",
-      formalShirt: "https://saadaa.in/collections/formal-shirts"
+      shortkurta:  "https://saadaa.in/collections/men-airy-linen-short-kurtas",
+      longKurta:   "https://saadaa.in/collections/airy-linen-long-kurtas-1",
+      formalShirt: "https://saadaa.in/collections/formal-shirts",
+      linenFull:   "https://saadaa.in/collections/men-100-linen-full-sleeve-shirt",  // Update if your URL is different
+      linenHalf:   "https://saadaa.in/collections/men-100-linen-half-sleeve-shirt"   // Update if your URL is different
     };
 
     // ─────────── In-memory cache & loaded flags ───────────
@@ -241,21 +247,25 @@
       newarrival:  [],
       shortkurta:  [],
       longKurta:   [],
-      formalShirt: []
+      formalShirt: [],
+      linenFull:   [],
+      linenHalf:   []
     };
     let cacheLoaded = {
       bestsellers: false,
       newarrival:  false,
       shortkurta:  false,
       longKurta:   false,
-      formalShirt: false
+      formalShirt: false,
+      linenFull:   false,
+      linenHalf:   false
     };
 
     // ─────────── Fetch (max 9) products for a given base tag, filtering out drafts ───────────
     async function fetchProductsByTag(baseTag) {
       const query = `
         {
-          products(first: 9, query: "tag:'${baseTag}'") {
+          products(first: 30, query: "tag:'${baseTag}'") {
             edges {
               node {
                 id
@@ -398,8 +408,10 @@
         addImageLoadListeners();
       }
 
-      // 3) In parallel, fetch each of the other four categories and cache them
-      const otherKeys = ["newarrival", "shortkurta", "longKurta", "formalShirt"];
+      // 3) In parallel, fetch each of the other six categories and cache them
+      const otherKeys = [
+        "newarrival", "shortkurta", "longKurta", "formalShirt", "linenFull", "linenHalf"
+      ];
       await Promise.all(
         otherKeys.map(async key => {
           const prods = await fetchProductsByTag(tagMap[key]);

@@ -28,7 +28,11 @@
  or collection.title contains '100% Cotton - Everyday Pants'
  or collection.title contains 'Viscose Palazzo Pants'   
  or collection.title contains 'EVERYDAY COTTON PANT'
-    or collection.title contains 'Airy Linen Wide Leg Pant'
+ or collection.title contains 'Airy Linen Wide Leg Pant'
+ or collection.title contains 'MEN AIRY-LINEN SHORT KURTAS'
+ or collection.title contains 'Men 100% Linen Full Sleeve Shirt'
+ or collection.title contains 'Men 100% Linen Half Sleeve Shirt'
+ or collection.title contains 'Airy Linen Straight Pant'   
  %}
     {% assign selected_collection = collection %}
     {% break %}
@@ -37,16 +41,6 @@
 
 
 
-<style>
-  {% if product.title contains 'Palazzo' %}
-    .block-swatch {
-      font-size: 12px;
-      padding: 0;
-      min-width: 3.4rem;
-      min-height: 3.4rem;
-    }
-  {% endif %}
-</style>
 {%- liquid
   assign has_content_below_gallery = false
 
@@ -87,7 +81,7 @@
 <div class="section-spacing section-spacing--tight">
   <div class="product_toggle">
 <a href="#product_description" class="toggle_button"><span>Details</span></a>
-<a href="#style_with" class="toggle_button"><span>Style With</span></a>
+<a href="#pair-it-with1" class="toggle_button"><span>Style With</span></a>
 <a href="#faq" class="toggle_button"><span>FAQ</span></a>
 <a href="#shopify-block-loox-product-reviews" class="toggle_button"><span>Reviews</span></a>
 <a href="#product" class="top_arrow text-center">
@@ -669,10 +663,15 @@ endif
     {%- render 'icon' with 'close' -%}
     <div class="overlay_content_text">
         {% render 'similar-style', collection1: selected_collection, collection2: product.metafields.custom.style_with_product.value, section:section %}
+      
     </div>
   </div>
 </div>
 {%  endif %}
+
+
+
+   {% comment %} 
 <div class="overlay_wrapper notify-me" data-service="service_31">
   <div class="close_overlay"></div>
   <div class="overlay_content">
@@ -683,7 +682,7 @@ endif
   </div>
 </div>
 
-
+{% endcomment %}
 
     
       {% render 'notification-banner' %}

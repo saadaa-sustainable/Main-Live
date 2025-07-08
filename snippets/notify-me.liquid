@@ -5,13 +5,13 @@
     </span>
     <span>We will notify you once product becomes available.</span>
   </div>
-  <input
-    type="hidden"
-    name="id"
-    id="variant_id"
-    class="notify_me_input"
-    value="{{ product.selected_or_first_available_variant.id }}"
-    disabled />
+<input
+  type="hidden"
+  name="id"
+  id="variant_id"
+  class="notify_me_input"
+  value="{{ product.selected_or_first_available_variant.id }}" />
+
   <div class="notify__text_container">
     <select name="countryCode" id="countryCode">
       <option data-countryCode="GB" value="44">UK (+44)</option>
